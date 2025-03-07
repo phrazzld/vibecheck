@@ -1,0 +1,13 @@
+Based on the following image, create an authoritative aesthetic reference guide for software designers. Rather than simply analyzing the image, extract and define the core aesthetic it represents. Begin with a creative title that captures the essence of this aesthetic (e.g., 'Neo-Brutalist Playground', 'Digital Zen Minimalism', 'Retro Synth Vaporwave'). Then craft a comprehensive style guide that thoroughly articulates this aesthetic's principles, including:
+
+1. Color palette with specific hex codes and usage guidelines
+2. Typography recommendations (fonts, sizes, weights, and hierarchy)
+3. Shape language and compositional principles
+4. Texture and material qualities
+5. UI element styling (buttons, cards, menus, etc.)
+6. Animation and interaction principles
+7. Iconography guidelines
+8. Historical and artistic influences
+9. Emotional qualities and user experience goals
+
+Make this document directly useful as a reference for designers implementing this aesthetic in digital products. The output should be in markdown format with clear sections and practical, actionable guidance.

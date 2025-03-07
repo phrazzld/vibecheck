@@ -1,0 +1,31 @@
+{
+  "name": "vibecheck",
+  "version": "1.0.0",
+  "description": "CLI tool that transforms images into comprehensive aesthetic style guides for software designers",
+  "main": "src/index.js",
+  "bin": {
+    "vibecheck": "src/index.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "openai",
+    "gpt-4o",
+    "image-analysis",
+    "aesthetic",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "openai": "^4.28.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  }
+}

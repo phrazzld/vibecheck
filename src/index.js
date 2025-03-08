@@ -2,23 +2,18 @@
 
 /**
  * Main entry point for vibecheck CLI.
+ * Enhanced with beautiful UI and interactive features.
  */
 const { parseArgs } = require("./cli");
-const { encodeImageToBase64, createDataUrl } = require("./image-processor");
+const { validateImagePath, encodeImageToBase64, createDataUrl } = require("./image-processor");
 const OpenAIClient = require("./openai-client");
 const { writeOutput } = require("./output-handler");
+const ui = require("./ui");
 const path = require("path");
+const fs = require("fs");
 
-/**
- * Logs a message if verbose mode is enabled
- * @param {boolean} verbose - Whether verbose mode is enabled
- * @param {string} message - Message to log
- */
-function logVerbose(verbose, message) {
-  if (verbose) {
-    console.log(`[INFO] ${message}`);
-  }
-}
+// Enable/disable color based on --no-color flag
+const chalk = require("chalk");
 
 /**
  * Main function
@@ -26,39 +21,90 @@ function logVerbose(verbose, message) {
 async function main() {
   try {
     // Parse command-line arguments
-    const options = parseArgs();
+    let options = parseArgs();
+    
+    // Handle --no-color flag
+    if (options.color === false) {
+      chalk.level = 0;
+    }
+    
+    // Display header
+    console.log(ui.styles.createHeader());
+    console.log(ui.styles.divider());
+    
+    // Interactive mode
+    if (options.interactive) {
+      const interactiveOptions = await ui.prompts.promptInteractive();
+      options = { ...options, ...interactiveOptions };
+    }
     
     // Check for required API key
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error("Error: OPENAI_API_KEY environment variable is not set");
+      console.error(ui.styles.error("OPENAI_API_KEY environment variable is not set"));
+      console.log(ui.styles.info("Set it with: export OPENAI_API_KEY=your-api-key"));
       process.exit(1);
     }
     
-    logVerbose(options.verbose, "Starting analysis process...");
-    
-    // Process the image
-    logVerbose(options.verbose, `Reading image from: ${options.image}`);
+    // Validate and process the image
+    validateImagePath(options.image);
     const imagePath = path.resolve(options.image);
+    
+    // Display image info
+    const imageInfo = ui.getImageInfo(imagePath);
+    console.log(ui.output.createImageInfo(imageInfo));
+    
+    // Create a spinner for the encoding step
+    const encodingSpinner = ui.progress.createSpinner("Reading and encoding image");
+    encodingSpinner.start();
+    
+    // Encode the image
     const base64Image = encodeImageToBase64(imagePath);
     const dataUrl = createDataUrl(base64Image, imagePath);
     
+    encodingSpinner.succeed("Image encoded successfully");
+    
+    // Prepare the analysis step
+    console.log("");
+    const analysisSpinner = ui.progress.createSpinner(
+      `Analyzing image with ${options.model} (${options.detail} detail)`,
+      "pulse"
+    );
+    analysisSpinner.start();
+    
     // Create OpenAI client and analyze image
-    logVerbose(options.verbose, `Analyzing image with model: ${options.model}, detail level: ${options.detail}`);
     const openai = new OpenAIClient(apiKey);
     const result = await openai.analyzeImage(dataUrl, {
       detailLevel: options.detail,
       model: options.model
     });
     
+    analysisSpinner.succeed("Analysis complete");
+    
+    // Display summary of the generated content
+    console.log(ui.output.createSummary(result));
+    
+    // Prepare for output
+    const outputSpinner = ui.progress.createSpinner("Saving aesthetic guide");
+    outputSpinner.start();
+    
     // Write output
     const outputPath = path.resolve(options.output);
-    logVerbose(options.verbose, `Writing analysis to: ${outputPath}`);
     writeOutput(result, outputPath);
     
-    console.log(`( Aesthetic profile generated and saved to: ${outputPath}`);
+    outputSpinner.succeed(`Guide saved to ${outputPath}`);
+    
+    // Show success message
+    console.log(ui.output.createSuccessMessage(outputPath));
+    
+    // Post-analysis actions if interactive
+    if (options.interactive) {
+      await ui.performPostAnalysisActions(outputPath, result);
+    }
+    
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    // Show styled error message
+    console.error(ui.output.formatError(error.message));
     process.exit(1);
   }
 }

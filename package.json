@@ -6,6 +6,7 @@
   "bin": {
     "vibecheck": "src/index.js"
   },
+  "type": "commonjs",
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
@@ -21,8 +22,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "boxen": "^5.1.2",
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
     "commander": "^11.1.0",
-    "openai": "^4.28.0"
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2",
+    "inquirer": "^8.2.6",
+    "openai": "^4.28.0",
+    "ora": "^5.4.1",
+    "terminal-link": "^2.1.1"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

@@ -1,78 +1,88 @@
-# vibecheck
+# vibecheck ✨
 
-A CLI tool that transforms images into comprehensive aesthetic style guides for software designers using OpenAI's GPT-4o.
+Transform images into comprehensive aesthetic style guides for software designers with a beautiful interactive CLI experience.
+
+![vibecheck CLI](https://github.com/phrazzld/vibecheck/assets/images/vibecheck-demo.gif)
 
 ## Features
 
-- Extract aesthetic principles from any image using GPT-4o's vision capabilities
-- Generate comprehensive, actionable style guides for software design
-- Create detailed color palettes with hex codes
-- Provide typography, UI element, and interaction guidelines
-- Control detail level for different use cases
-- Choose between different OpenAI vision models
-- Save output to custom locations
-- Easily customize the prompt by editing the prompt.txt file
+- 🎨 Extract aesthetic style guides from any image using OpenAI's vision models
+- ✨ Beautiful interactive CLI with color, animations, and styled output
+- 🧙‍♂️ Guided wizard mode for step-by-step analysis
+- 🌈 Color palette visualization in terminal
+- 📊 Real-time progress tracking with elegant spinners
+- 📝 Comprehensive style guides with typography, colors, UI elements, and more
+- 🚀 Flexible configuration with multiple detail levels and model options
 
 ## Installation
 
 ```bash
-# Clone the repository
+# Install globally from npm (recommended)
+npm install -g vibecheck
+
+# Or clone and install from source
 git clone https://github.com/phrazzld/vibecheck.git
 cd vibecheck
-
-# Install dependencies
 npm install
-
-# Make it globally available (optional)
 npm link
 ```
 
 ## Usage
 
+### Interactive Mode (Recommended)
+
 ```bash
-# Basic usage
-vibecheck --image /path/to/image.jpg
-
-# Set output file
-vibecheck --image /path/to/image.jpg --output analysis.md
-
-# Control detail level (auto, low, high)
-vibecheck --image /path/to/image.jpg --detail high
-
-# Use a different model
-vibecheck --image /path/to/image.jpg --model gpt-4o-mini
-
-# Enable verbose logging
-vibecheck --image /path/to/image.jpg --verbose
+# Launch the interactive wizard
+vibecheck --interactive
 ```
 
-### Required Environment Variables
+### Command Line
 
-- `OPENAI_API_KEY`: Your OpenAI API key
+```bash
+# Basic usage
+vibecheck --image path/to/image.jpg
 
-You can set it in your environment:
+# Set output file
+vibecheck --image path/to/image.jpg --output design-system.md
+
+# Choose detail level (low, auto, high)
+vibecheck --image path/to/image.jpg --detail high
+
+# Use a faster model
+vibecheck --image path/to/image.jpg --model gpt-4o-mini
+
+# Disable colors
+vibecheck --image path/to/image.jpg --no-color
+```
+
+### Required Environment Variable
 
 ```bash
 export OPENAI_API_KEY=your-api-key-here
 ```
 
-### Customizing the Prompt
+## Output Examples
 
-You can easily customize how vibecheck analyzes images by editing the prompt in `src/prompt.txt`. The default prompt is designed to create comprehensive style guides for software designers, but you can modify it to focus on specific aspects of design or to produce different types of output.
+The tool generates comprehensive style guides including:
 
-## Output
+```markdown
+# Neo-Brutalist Cityscape
 
-The tool generates a comprehensive aesthetic style guide in markdown format that includes:
+## Color Palette
+- Primary: #FF4D00 - Vibrant orange for key elements
+- Secondary: #1A1A1A - Deep black for backgrounds
+- Accent: #FFD600 - Bright yellow for highlights
+...
 
-- A creative title capturing the essence of the aesthetic
-- Detailed color palette with hex codes and usage guidelines
-- Typography recommendations
-- Shape language and compositional principles
-- UI element styling guidelines
-- Animation and interaction principles
-- Iconography guidelines
-- Historical and artistic influences
-- Emotional qualities and user experience goals
+## Typography
+- Headings: Sans-serif, bold, oversized with tight tracking
+- Body: Monospace with medium weight
+...
+```
+
+## Customization
+
+Edit `src/prompt.txt` to customize the analysis focus and style guide format.
 
 ## Development
 
@@ -80,7 +90,7 @@ The tool generates a comprehensive aesthetic style guide in markdown format that
 # Run tests
 npm test
 
-# Lint code
+# Check code style
 npm run lint
 ```
 

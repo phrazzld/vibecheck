@@ -82,14 +82,39 @@ async function main() {
     
     // The workflow is already started by creating it
     
-    // Mode selection for all users
-    if (!options.skipModeSelection) {
-      // Check if --cancel flag is set to exit gracefully
-      if (options.cancel) {
-        console.log(ui.styles.info("Operation canceled. Exiting..."));
-        process.exit(0);
-      }
+    // Check if image is provided or if there are no CLI arguments
+    const hasImageProvided = !!options.image;
+    // Check if this is a direct execution with no args (empty process.argv other than node and script path)
+    const hasNoArgs = process.argv.length <= 2;
+    
+    // Check if --cancel flag is set to exit gracefully
+    if (options.cancel) {
+      console.log(ui.styles.info("Operation canceled. Exiting..."));
+      process.exit(0);
+    }
+    
+    // If image is provided via CLI, just run analysis with defaults
+    // If no args are provided, go straight to guided journey mode (skip mode selection)
+    // Otherwise show the mode selection to guide the user
+    if (hasNoArgs) {
+      // When just running `vibecheck` without arguments, go straight to guided journey
+      console.log(`\n  ${chalk.hex(ui.styles.colors.accent).bold("✨ GUIDED JOURNEY")}`);
+      console.log(chalk.dim(`  Starting interactive experience...\n`));
       
+      // Show welcome text to make it clear we're in guided mode
+      ui.prompts.showWelcomeNarrative();
+      
+      options.interactive = true;
+      const interactiveOptions = await ui.prompts.promptInteractive(true); // true means skip welcome narrative (already shown)
+      options = { ...options, ...interactiveOptions };
+      
+      // Display summary of selected options
+      ui.displayOptionsSummary(options);
+    } else if (hasImageProvided) {
+      // Image provided via CLI arguments, just continue with defaults
+      // No need to prompt for anything
+    } else if (!options.skipModeSelection) {
+      // Only show mode selection when no image provided but other flags are set
       const mode = await ui.prompts.promptForMode();
       
       if (mode === "guided") {
@@ -100,7 +125,7 @@ async function main() {
         
         // Display summary of selected options
         ui.displayOptionsSummary(options);
-      } else if (mode === "quick" && !options.image) {
+      } else if (mode === "quick") {
         // Quick mode but we need an image path
         const imagePath = await ui.prompts.promptForImagePath();
         options.image = imagePath;
@@ -115,10 +140,8 @@ async function main() {
           ui.displayOptionsSummary(options);
         } else {
           console.log(ui.styles.warning("No previous session found. Starting with default settings."));
-          if (!options.image) {
-            const imagePath = await ui.prompts.promptForImagePath();
-            options.image = imagePath;
-          }
+          const imagePath = await ui.prompts.promptForImagePath();
+          options.image = imagePath;
         }
       }
     } else if (options.interactive) {

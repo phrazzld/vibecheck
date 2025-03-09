@@ -45,15 +45,19 @@ Examples:
  */
 function parseArgs() {
   const program = createCli();
-  program.parse(process.argv);
   
+  // Let's keep the help option but modify Commander to not display help automatically
+  // The help command will only be shown when -h or --help is explicitly used
+  const originalHelpCallback = program._helpCallback;
+  program._helpCallback = () => {
+    originalHelpCallback();
+    process.exit(0);
+  };
+  
+  program.parse(process.argv);
   const options = program.opts();
   
-  // If no image is provided and not in interactive mode, display help
-  if (!options.image && !options.interactive) {
-    program.help();
-  }
-  
+  // All flow control is handled in the main file based on provided arguments
   return options;
 }
 

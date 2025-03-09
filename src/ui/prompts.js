@@ -301,14 +301,17 @@ async function promptForStylePreferences() {
 
 /**
  * Prompts for interactive mode
+ * @param {boolean} skipWelcome - Skip welcome narrative if already shown
  * @returns {Promise<Object>} - All selected options
  */
-async function promptInteractive() {
+async function promptInteractive(skipWelcome = false) {
   // Get references to styles
   const { createSection } = require("./styles");
   
-  // Show welcome narrative if this is the guided journey
-  showWelcomeNarrative();
+  // Show welcome narrative if not already shown
+  if (!skipWelcome) {
+    showWelcomeNarrative();
+  }
   
   console.log(createSection("Image Selection", ""));
   const imagePath = await promptForImagePath();

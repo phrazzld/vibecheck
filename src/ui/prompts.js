@@ -38,18 +38,9 @@ function createStyledChoices(choices, defaultValue = null) {
  * @returns {Promise<string>} - Selected image path
  */
 async function promptForImagePath(defaultPath = null) {
-  const { imagePath } = await inquirer.prompt([
-    {
-      type: "input",
-      name: "imagePath",
-      message: "Enter the path to your image:",
-      prefix: "  ",
-      default: defaultPath,
-      validate: input => input ? true : "Please enter a valid path"
-    }
-  ]);
-  
-  return imagePath;
+  // Use the enhanced file browser component
+  const fileBrowser = require('./components/file-browser');
+  return fileBrowser.promptForImagePath(defaultPath);
 }
 
 /**
@@ -196,28 +187,62 @@ async function promptForNextAction(options = ["edit", "view", "extract", "exit"]
  * @returns {Promise<string>} - Selected mode
  */
 async function promptForMode() {
+  // Get session manager for previewing last session
+  const sessionManager = require('./components/session-manager');
+  
   // Print header
-  console.log(`\n  ${chalk.hex(colors.primary).bold("CHOOSE YOUR PATH")}\n`);
-  console.log(chalk.dim("  ───────────────────────────────────────────"));
+  console.log(`\n  ${chalk.hex(colors.primary).bold("VIBECHECK")}\n`);
+  console.log(chalk.dim("  Transform images into aesthetic style guides\n"));
   
-  // Print options without box
-  console.log(`\n  ${chalk.hex(colors.accent)("✨")} GUIDED JOURNEY  ${chalk.dim("(Interactive)")}`);
-  console.log(`  ${chalk.hex(colors.secondary)("🚀")} QUICK ANALYSIS ${chalk.dim("(Command Line)")}`);
-  console.log(`  ${chalk.hex(colors.info)("🔮")} LAST SESSION   ${chalk.dim("(Repeat Settings)")}\n`);
+  // Create improved choices with better descriptions
+  const choices = [
+    { 
+      value: "guided", 
+      name: `${chalk.hex(colors.accent)("✨")} Guided Journey`,
+      description: "Interactive experience with comprehensive options"
+    },
+    { 
+      value: "quick", 
+      name: `${chalk.hex(colors.secondary)("🚀")} Quick Analysis`,
+      description: "Faster experience with minimal prompts"
+    }
+  ];
   
+  // Only add Continue Recent option if a previous session exists
+  const previousSession = sessionManager.loadSession();
+  if (previousSession) {
+    choices.push({ 
+      value: "last", 
+      name: `${chalk.hex(colors.info)("↻")} Continue Recent Project`,
+      description: "Resume from your last image analysis"
+    });
+  }
+  
+  // Use a more visual prompt style
   const { mode } = await inquirer.prompt([
     {
       type: "list",
       name: "mode",
-      message: "Select your preferred experience:",
+      message: "How would you like to proceed?",
       prefix: "  ",
-      choices: [
-        { value: "guided", name: "✨ Guided Journey" },
-        { value: "quick", name: "🚀 Quick Analysis" },
-        { value: "last", name: "🔮 Last Session" }
-      ]
+      choices: choices.map(choice => ({
+        value: choice.value,
+        name: `${choice.name}\n     ${chalk.dim(choice.description)}`
+      })),
+      pageSize: 10
     }
   ]);
+  
+  // If user selected previous session, show them a preview
+  if (mode === "last") {
+    console.log(sessionManager.getSessionSummary());
+    const confirm = await sessionManager.confirmLoadSession(inquirer);
+    
+    // If they choose not to load it, go back to mode selection
+    if (!confirm) {
+      return promptForMode();
+    }
+  }
   
   return mode;
 }

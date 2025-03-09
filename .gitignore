@@ -41,9 +41,11 @@ build/
 AESTHETIC.md
 *.md
 !README.md
-!PLAN.md
+PLAN.md
 !CLAUDE.md
-!SUMMARY.md
+SUMMARY.md
+AESTHETIC_image*
+.vibecheck-session
 
 # Sample images
 samples/

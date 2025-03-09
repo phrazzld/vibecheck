@@ -70,18 +70,17 @@ async function main() {
     await animateLaunchHeader();
     console.log(ui.styles.divider());
     
-    // Create a process bar for the entire workflow
-    const processSteps = [
-      "Setting up",
-      "Reading image",
-      "Analyzing image",
-      "Generating guide",
-      "Saving output"
-    ];
-    const processBar = ui.progress.createProcessBar(processSteps);
+    // Use the enhanced workflow component for process steps
+    const progressDisplay = require('./ui/components/progress-display');
+    const workflow = progressDisplay.createWorkflow([
+      "Setting up options",
+      "Reading & processing image",
+      "Analyzing with AI",
+      "Generating style guide",
+      "Finalizing results"
+    ]);
     
-    // Start the process bar
-    processBar.start();
+    // The workflow is already started by creating it
     
     // Mode selection for all users
     if (!options.skipModeSelection) {
@@ -106,13 +105,15 @@ async function main() {
         const imagePath = await ui.prompts.promptForImagePath();
         options.image = imagePath;
       } else if (mode === "last") {
-        // Load last session settings from saved file if available
-        try {
-          const lastSession = JSON.parse(fs.readFileSync(path.join(process.cwd(), ".vibecheck-session"), "utf8"));
+        // Load previous session using the session manager
+        const sessionManager = require('./ui/components/session-manager');
+        const lastSession = sessionManager.loadSession();
+        
+        if (lastSession) {
           options = { ...options, ...lastSession };
-          console.log(ui.styles.info("Loaded settings from last session"));
+          console.log(ui.styles.info("Loaded settings from previous session"));
           ui.displayOptionsSummary(options);
-        } catch (error) {
+        } else {
           console.log(ui.styles.warning("No previous session found. Starting with default settings."));
           if (!options.image) {
             const imagePath = await ui.prompts.promptForImagePath();
@@ -129,8 +130,8 @@ async function main() {
       ui.displayOptionsSummary(options);
     }
     
-    // Move to next step: Reading image
-    processBar.nextStep();
+    // Move to next step: Reading & processing image
+    workflow.next("Preparing to read image");
     
     // Check for required API key
     const apiKey = process.env.OPENAI_API_KEY;
@@ -148,48 +149,57 @@ async function main() {
     const imageInfo = ui.getImageInfo(imagePath);
     console.log(ui.output.createImageInfo(imageInfo));
     
-    // Create a spinner for the encoding step
-    const encodingSpinner = ui.progress.createSpinner("Reading and encoding image");
+    // Create an enhanced spinner for the encoding step with contextual information
+    const encodingSpinner = progressDisplay.createContextSpinner(
+      "Reading and encoding image", 
+      "Preparing for analysis"
+    );
     encodingSpinner.start();
     
     // Encode the image
+    encodingSpinner.updateContext("Converting to base64");
     const base64Image = encodeImageToBase64(imagePath);
+    encodingSpinner.updateContext("Creating data URL");
     const dataUrl = createDataUrl(base64Image, imagePath);
     
-    encodingSpinner.succeed("Image encoded successfully");
+    encodingSpinner.succeed("  Image encoded successfully");
     
-    // Move to next step: Analyzing image
-    processBar.nextStep();
+    // Move to next step: Analyzing with AI
+    workflow.next("Starting AI analysis");
     
-    // Prepare the analysis step
+    // Prepare the analysis step with enhanced context spinner
     console.log("");
-    const analysisSpinner = ui.progress.createSpinner(
+    const analysisSpinner = progressDisplay.createContextSpinner(
       `Analyzing image with ${options.model} (${options.detail} detail)`,
-      "pulse"
-    );
+      "Sending to OpenAI API"
+    )
     analysisSpinner.start();
     
     // Create OpenAI client and analyze image
     const openai = new OpenAIClient(apiKey, { verbose: options.verbose });
+    
+    // Updates to show progress during API call
+    analysisSpinner.updateContext("Waiting for OpenAI response");
+    
     const result = await openai.analyzeImage(dataUrl, {
       detailLevel: options.detail,
       model: options.model,
       verbose: options.verbose
     });
     
-    analysisSpinner.succeed("Analysis complete");
+    analysisSpinner.succeed("  Analysis complete");
     
-    // Move to next step: Generating guide
-    processBar.nextStep();
+    // Move to next step: Generating style guide
+    workflow.next("Processing AI response");
     
     // Display summary of the generated content
     console.log(ui.output.createSummary(result));
     
-    // Move to next step: Saving output
-    processBar.nextStep();
+    // Move to next step: Finalizing results
+    workflow.next("Preparing to save results");
     
-    // Prepare for output
-    const outputSpinner = ui.progress.createSpinner("Saving aesthetic guide");
+    // Prepare for output with enhanced spinner
+    const outputSpinner = progressDisplay.createSimpleSpinner("Saving aesthetic guide");
     outputSpinner.start();
     
     // Write output
@@ -199,28 +209,17 @@ async function main() {
       includeImage: options.image !== false
     });
     
-    outputSpinner.succeed(`Guide saved to ${outputPath}`);
+    outputSpinner.succeed(`  Guide saved to ${outputPath}`);
     
-    // Complete the process bar
-    processBar.complete("Process completed successfully");
+    // Complete the workflow
+    workflow.complete();
     
     // Show success message
     console.log(ui.output.createSuccessMessage(outputPath));
     
-    // Save session for next time
-    try {
-      fs.writeFileSync(
-        path.join(process.cwd(), ".vibecheck-session"), 
-        JSON.stringify({
-          image: options.image,
-          output: options.output,
-          detail: options.detail,
-          model: options.model
-        }, null, 2)
-      );
-    } catch (error) {
-      // Silent fail - not critical
-    }
+    // Save session for next time using the session manager
+    const sessionManager = require('./ui/components/session-manager');
+    sessionManager.saveSession(options);
     
     // Post-analysis actions if interactive
     if (options.interactive) {

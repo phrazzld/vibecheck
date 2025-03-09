@@ -32,6 +32,7 @@
     "figlet": "^1.7.0",
     "gradient-string": "^2.0.2",
     "inquirer": "^8.2.6",
+    "inquirer-autocomplete-prompt": "^1.4.0",
     "openai": "^4.28.0",
     "ora": "^5.4.1",
     "strip-ansi": "^6.0.1",

@@ -13,7 +13,7 @@ const DEFAULT_PROMPT = fs.readFileSync(
 );
 
 class OpenAIClient {
-  constructor(apiKey) {
+  constructor(apiKey, options = {}) {
     if (!apiKey) {
       throw new Error("OpenAI API key is required");
     }
@@ -21,6 +21,9 @@ class OpenAIClient {
     this.client = new OpenAI({
       apiKey: apiKey
     });
+    
+    this.verbose = options.verbose || false;
+    this.prompt = DEFAULT_PROMPT;
   }
   
   /**
@@ -42,7 +45,7 @@ class OpenAIClient {
         content: [
           {
             type: "text",
-            text: DEFAULT_PROMPT
+            text: this.prompt
           },
           {
             type: "image_url",
@@ -64,9 +67,24 @@ class OpenAIClient {
    * @param {string} options.model - OpenAI model to use
    * @returns {Promise<string>} - The analyzed content as markdown
    */
-  async analyzeImage(dataUrl, { detailLevel = "auto", model = "gpt-4o" } = {}) {
+  async analyzeImage(dataUrl, { detailLevel = "auto", model = "gpt-4o", verbose = false } = {}) {
     try {
+      // Set verbose from options or use the instance value
+      this.verbose = verbose || this.verbose;
+      
       const messages = this.constructMessages(dataUrl, detailLevel);
+      
+      if (this.verbose) {
+        console.log("\n[Verbose] Sending request to OpenAI API");
+        console.log(`[Verbose] Model: ${model}`);
+        console.log(`[Verbose] Detail level: ${detailLevel}`);
+        console.log("[Verbose] Prompt length: " + this.prompt.length + " characters");
+        // Print the first and last 100 characters of the prompt for debugging
+        console.log("[Verbose] Prompt preview: " + 
+          this.prompt.substring(0, 100) + 
+          "..." + 
+          this.prompt.substring(this.prompt.length - 100));
+      }
       
       const response = await this.client.chat.completions.create({
         model: model,
@@ -74,6 +92,14 @@ class OpenAIClient {
         max_tokens: 3000,
         temperature: 0.7
       });
+      
+      if (this.verbose) {
+        console.log(`[Verbose] OpenAI response received (${response.choices[0].message.content.length} characters)`);
+        console.log(`[Verbose] Model: ${response.model}`);
+        console.log(`[Verbose] Prompt tokens: ${response.usage.prompt_tokens}`);
+        console.log(`[Verbose] Completion tokens: ${response.usage.completion_tokens}`);
+        console.log(`[Verbose] Total tokens: ${response.usage.total_tokens}`);
+      }
       
       return response.choices[0].message.content;
     } catch (error) {

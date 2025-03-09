@@ -168,6 +168,11 @@ async function promptForNextAction(options = ["edit", "view", "extract", "exit"]
       value: "exit",
       name: `${chalk.hex(colors.muted)("🚪")} Exit`,
       short: "Exit"
+    },
+    "cancel": {
+      value: "cancel",
+      name: `${chalk.hex(colors.error)("❌")} Cancel operation`,
+      short: "Cancel"
     }
   };
   

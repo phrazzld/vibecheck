@@ -45,6 +45,12 @@ describe("CLI", () => {
       
       const colorOption = options.find(opt => opt.long === "--no-color");
       expect(colorOption).toBeDefined();
+      
+      const noImageOption = options.find(opt => opt.long === "--no-image");
+      expect(noImageOption).toBeDefined();
+      
+      const cancelOption = options.find(opt => opt.long === "--cancel");
+      expect(cancelOption).toBeDefined();
     });
   });
   

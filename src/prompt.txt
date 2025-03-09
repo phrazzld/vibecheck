@@ -1,13 +1,85 @@
-Based on the following image, create an authoritative aesthetic reference guide for software designers. Rather than simply analyzing the image, extract and define the core aesthetic it represents. Begin with a creative title that captures the essence of this aesthetic (e.g., 'Neo-Brutalist Playground', 'Digital Zen Minimalism', 'Retro Synth Vaporwave'). Then craft a comprehensive style guide that thoroughly articulates this aesthetic's principles, including:
+# Aesthetic Guide Generation Prompt
 
-1. Color palette with specific hex codes and usage guidelines
-2. Typography recommendations (fonts, sizes, weights, and hierarchy)
-3. Shape language and compositional principles
-4. Texture and material qualities
-5. UI element styling (buttons, cards, menus, etc.)
-6. Animation and interaction principles
-7. Iconography guidelines
-8. Historical and artistic influences
-9. Emotional qualities and user experience goals
+Based on the following image, create an authoritative aesthetic reference guide for software designers. Rather than simply analyzing the image, extract and define the core aesthetic it represents. 
 
-Make this document directly useful as a reference for designers implementing this aesthetic in digital products. The output should be in markdown format with clear sections and practical, actionable guidance.
+## Output Structure
+- Begin with a creative and descriptive H1 title that captures the essence of this aesthetic (e.g., 'Neo-Brutalist Playground', 'Digital Zen Minimalism', 'Retro Synth Vaporwave')
+- Provide a concise 2-3 sentence introduction that summarizes the aesthetic
+- Use H2 headings for each major section
+- Use bullet points for lists
+- Use code blocks for color hex codes
+- Include concrete examples for each design element
+
+## Required Sections
+Create the following sections, each with an H2 heading:
+
+1. **Color Palette**
+   - Provide a minimum of 5 colors with exact hex codes in the format `#RRGGBB`
+   - For each color, specify its name, hex code, and usage guidelines
+   - Indicate primary, secondary, accent, and background colors
+   - Include a sample color combination for light/dark mode if applicable
+
+2. **Typography**
+   - Recommend specific font families (both primary and fallback options)
+   - Specify font sizes in px for: headings (H1-H6), body text, captions
+   - Include font weights and spacing guidelines
+   - Provide a clear type hierarchy with at least 3 levels
+
+3. **Shape Language**
+   - Define overall shape approach (organic, geometric, mixed)
+   - Describe corner treatments (rounded, sharp, etc.) with specific pixel values
+   - Explain compositional principles (symmetry, asymmetry, grid)
+   - Provide spacing/padding guidelines in px units
+
+4. **Texture & Materials**
+   - Detail surface treatments
+   - Include specific guidelines for shadows, gradients, or patterns
+   - Provide exact CSS values for shadows, gradients, or patterns
+
+5. **UI Elements**
+   - Define specific styling for buttons, cards, forms, and navigation
+   - Include states (hover, active, disabled) with specific visual changes
+   - Provide exact padding, margin, and border values in px
+
+6. **Animation & Interaction**
+   - Recommend animation timing (in ms) and easing functions
+   - Define hover/tap effects
+   - Describe transition styles between states or pages
+   - Specify motion characteristics (smooth, bouncy, swift)
+
+7. **Iconography**
+   - Define icon style (outlined, filled, duotone, etc.)
+   - Specify stroke width (in px) and corner treatment
+   - Provide sizing guidelines and grid recommendations
+
+8. **Inspiration & Context**
+   - List 3-5 historical or artistic influences
+   - Explain how this aesthetic relates to contemporary design trends
+   - Suggest applications where this aesthetic would work well
+
+## Example (Color Palette Section)
+
+```
+## Color Palette
+
+This aesthetic employs a bold yet harmonious color scheme rooted in natural tones with vibrant accents:
+
+- **Forest Green** - `#2D5438`
+  Primary brand color, used for main navigation and key CTAs
+  
+- **Sand Beige** - `#E8DCCA`
+  Background color, provides warmth and contrast to the green
+  
+- **Terracotta** - `#C45541`
+  Accent color, used sparingly for highlights and important interactive elements
+  
+- **Deep Brown** - `#4A3B36`
+  Text color on light backgrounds, also used for secondary UI elements
+  
+- **Pale Sage** - `#CDD6C8`
+  Secondary background color, used for cards and alternate sections
+
+For dark mode interfaces, invert the background/text relationship using Sand Beige text on Deep Brown backgrounds.
+```
+
+Make this document directly useful as a reference for designers implementing this aesthetic in digital products. Ensure all guidance is practical, actionable, and includes specific CSS-ready values that can be directly implemented in code.

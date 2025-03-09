@@ -6,6 +6,7 @@ const chalk = require("chalk");
 const gradient = require("gradient-string");
 const figlet = require("figlet");
 const boxen = require("boxen");
+const stripAnsi = require("strip-ansi");
 
 // Brand color palette
 const colors = {
@@ -56,9 +57,9 @@ function createSection(title, content) {
   const titleGradient = gradient([colors.secondary, colors.tertiary]);
   
   // Calculate the actual displayed length of the title (without ANSI escape codes)
-  // We add 2 for the spaces around the title
-  const titleVisualLength = title.length + 2;
-  const formattedTitle = ` ${titleGradient(title)} `;
+  // We add a padding of 2 spaces on each side
+  const titleVisualLength = stripAnsi(title).length + 4;
+  const formattedTitle = `  ${titleGradient(title)}  `;
   
   // Ensure we don't have negative values for separator lengths
   const leftSeparatorLength = Math.max(0, Math.floor((width - titleVisualLength) / 2));
@@ -69,7 +70,63 @@ function createSection(title, content) {
   
   const separator = chalk.dim(`${leftSeparator}${formattedTitle}${rightSeparator}`);
   
-  return `\n${separator}\n${content}\n`;
+  // Process the content to ensure it fits within the terminal width
+  const wrappedContent = wrapTextToTerminalWidth(content, width);
+  
+  return `\n${separator}\n${wrappedContent}\n`;
+}
+
+/**
+ * Wraps text to fit within the terminal width
+ * @param {string} text - Text to wrap
+ * @param {number} maxWidth - Maximum width to wrap to
+ * @returns {string} - Wrapped text
+ */
+function wrapTextToTerminalWidth(text, maxWidth = 80) {
+  if (!text) return "";
+  
+  // Split the text into lines
+  const lines = text.split("\n");
+  
+  // Process each line
+  const wrappedLines = lines.map(line => {
+    // If the line is already short enough, return it as is
+    if (stripAnsi(line).length <= maxWidth) {
+      return line;
+    }
+    
+    // Otherwise, wrap the line
+    const words = line.split(" ");
+    const wrappedLine = [];
+    let currentLine = "";
+    
+    words.forEach(word => {
+      // Check if adding this word would exceed the max width
+      if (stripAnsi(currentLine + word).length > maxWidth - 1) {
+        // If the current line is not empty, add it to the wrapped lines
+        if (currentLine) {
+          wrappedLine.push(currentLine);
+          currentLine = word;
+        } else {
+          // If the word itself is longer than maxWidth, just add it
+          wrappedLine.push(word);
+          currentLine = "";
+        }
+      } else {
+        // Add the word to the current line
+        currentLine += (currentLine ? " " : "") + word;
+      }
+    });
+    
+    // Add the last line if it's not empty
+    if (currentLine) {
+      wrappedLine.push(currentLine);
+    }
+    
+    return wrappedLine.join("\n");
+  });
+  
+  return wrappedLines.join("\n");
 }
 
 /**
@@ -88,46 +145,61 @@ function createKeyValueList(data) {
 /**
  * Formats a success message
  * @param {string} message - Message to format
+ * @param {boolean} highlight - Whether to highlight the message
  * @returns {string} - Formatted success message
  */
-function success(message) {
-  return `${chalk.hex(colors.success)("✓")} ${message}`;
+function success(message, highlight = false) {
+  const icon = chalk.hex(colors.success)("✓");
+  const text = highlight ? chalk.hex(colors.success)(message) : message;
+  return `${icon} ${text}`;
 }
 
 /**
  * Formats an error message
  * @param {string} message - Message to format
+ * @param {boolean} highlight - Whether to highlight the message
  * @returns {string} - Formatted error message
  */
-function error(message) {
-  return `${chalk.hex(colors.error)("✗")} ${message}`;
+function error(message, highlight = false) {
+  const icon = chalk.hex(colors.error)("✗");
+  const text = highlight ? chalk.hex(colors.error)(message) : message;
+  return `${icon} ${text}`;
 }
 
 /**
  * Formats a warning message
  * @param {string} message - Message to format
+ * @param {boolean} highlight - Whether to highlight the message
  * @returns {string} - Formatted warning message
  */
-function warning(message) {
-  return `${chalk.hex(colors.warning)("⚠")} ${message}`;
+function warning(message, highlight = false) {
+  const icon = chalk.hex(colors.warning)("⚠");
+  const text = highlight ? chalk.hex(colors.warning)(message) : message;
+  return `${icon} ${text}`;
 }
 
 /**
  * Formats an info message
  * @param {string} message - Message to format
+ * @param {boolean} highlight - Whether to highlight the message
  * @returns {string} - Formatted info message
  */
-function info(message) {
-  return `${chalk.hex(colors.info)("ℹ")} ${message}`;
+function info(message, highlight = false) {
+  const icon = chalk.hex(colors.info)("ℹ");
+  const text = highlight ? chalk.hex(colors.info)(message) : message;
+  return `${icon} ${text}`;
 }
 
 /**
  * Formats a step message (for progress indicators)
  * @param {string} message - Message to format
+ * @param {boolean} highlight - Whether to highlight the message
  * @returns {string} - Formatted step message
  */
-function step(message) {
-  return `${chalk.hex(colors.tertiary)("▸")} ${message}`;
+function step(message, highlight = false) {
+  const icon = chalk.hex(colors.tertiary)("▸");
+  const text = highlight ? chalk.hex(colors.accent)(message) : message;
+  return `${icon} ${text}`;
 }
 
 /**
@@ -179,5 +251,6 @@ module.exports = {
   warning,
   info,
   step,
-  divider
+  divider,
+  wrapTextToTerminalWidth
 };

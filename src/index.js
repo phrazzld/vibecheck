@@ -32,11 +32,36 @@ async function main() {
     console.log(ui.styles.createHeader());
     console.log(ui.styles.divider());
     
+    // Create a process bar for the entire workflow
+    const processSteps = [
+      "Setting up",
+      "Reading image",
+      "Analyzing image",
+      "Generating guide",
+      "Saving output"
+    ];
+    const processBar = ui.progress.createProcessBar(processSteps);
+    
+    // Start the process bar
+    processBar.start();
+    
     // Interactive mode
     if (options.interactive) {
+      // Check if --cancel flag is set to exit gracefully
+      if (options.cancel) {
+        console.log(ui.styles.info("Interactive mode canceled. Exiting..."));
+        process.exit(0);
+      }
+      
       const interactiveOptions = await ui.prompts.promptInteractive();
       options = { ...options, ...interactiveOptions };
+      
+      // Display summary of selected options
+      ui.displayOptionsSummary(options);
     }
+    
+    // Move to next step: Reading image
+    processBar.nextStep();
     
     // Check for required API key
     const apiKey = process.env.OPENAI_API_KEY;
@@ -64,6 +89,9 @@ async function main() {
     
     encodingSpinner.succeed("Image encoded successfully");
     
+    // Move to next step: Analyzing image
+    processBar.nextStep();
+    
     // Prepare the analysis step
     console.log("");
     const analysisSpinner = ui.progress.createSpinner(
@@ -73,16 +101,23 @@ async function main() {
     analysisSpinner.start();
     
     // Create OpenAI client and analyze image
-    const openai = new OpenAIClient(apiKey);
+    const openai = new OpenAIClient(apiKey, { verbose: options.verbose });
     const result = await openai.analyzeImage(dataUrl, {
       detailLevel: options.detail,
-      model: options.model
+      model: options.model,
+      verbose: options.verbose
     });
     
     analysisSpinner.succeed("Analysis complete");
     
+    // Move to next step: Generating guide
+    processBar.nextStep();
+    
     // Display summary of the generated content
     console.log(ui.output.createSummary(result));
+    
+    // Move to next step: Saving output
+    processBar.nextStep();
     
     // Prepare for output
     const outputSpinner = ui.progress.createSpinner("Saving aesthetic guide");
@@ -90,9 +125,15 @@ async function main() {
     
     // Write output
     const outputPath = path.resolve(options.output);
-    writeOutput(result, outputPath);
+    writeOutput(result, outputPath, {
+      imagePath: options.image ? path.resolve(options.image) : null,
+      includeImage: options.image !== false
+    });
     
     outputSpinner.succeed(`Guide saved to ${outputPath}`);
+    
+    // Complete the process bar
+    processBar.complete("Process completed successfully");
     
     // Show success message
     console.log(ui.output.createSuccessMessage(outputPath));

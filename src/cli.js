@@ -23,12 +23,16 @@ function createCli() {
     .option("-v, --verbose", "Enable verbose output")
     .option("--interactive", "Use interactive mode with prompts")
     .option("--no-color", "Disable colored output")
+    .option("--no-image", "Don't include the image in the output file")
+    .option("--cancel", "Exit interactive mode gracefully")
     .addHelpText("after", `
 Examples:
   $ vibecheck --image path/to/image.jpg
   $ vibecheck --image path/to/image.jpg --output results.md --detail high
   $ vibecheck --image path/to/image.jpg --model gpt-4o-mini
+  $ vibecheck --image path/to/image.jpg --no-image
   $ vibecheck --interactive
+  $ vibecheck --interactive --cancel  # Start and then exit interactive mode
     `);
   
   return program;

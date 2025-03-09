@@ -32,16 +32,57 @@ function validateOutputPath(outputPath) {
 }
 
 /**
- * Writes content to a file
- * @param {string} content - Content to write
- * @param {string} outputPath - Path to write output to
- * @returns {string} - Path where content was written
+ * Copies the image file to the output directory
+ * @param {string} imagePath - Path to the original image
+ * @param {string} outputPath - Path to the markdown output file
+ * @returns {string} - Relative path to the copied image
  */
-function writeOutput(content, outputPath) {
-  validateOutputPath(outputPath);
+function copyImageFile(imagePath, outputPath) {
+  if (!imagePath) return null;
+  
+  const outputDir = path.dirname(outputPath);
+  const imageExt = path.extname(imagePath);
+  const outputBasename = path.basename(outputPath, path.extname(outputPath));
+  const timestamp = Date.now();
+  const imageFilename = `${outputBasename}_image_${timestamp}${imageExt}`;
+  const imageCopyPath = path.join(outputDir, imageFilename);
   
   try {
-    fs.writeFileSync(outputPath, content, { encoding: "utf8" });
+    fs.copyFileSync(imagePath, imageCopyPath);
+    // Return a path relative to the markdown file
+    return imageFilename;
+  } catch (error) {
+    // If copying fails, just log the error but continue
+    console.error(`Warning: Could not copy image file: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Writes content to a file with optional embedded image
+ * @param {string} content - Content to write
+ * @param {string} outputPath - Path to write output to
+ * @param {Object} options - Additional options
+ * @param {string} options.imagePath - Path to the original image
+ * @param {boolean} options.includeImage - Whether to include the image in output
+ * @returns {string} - Path where content was written
+ */
+function writeOutput(content, outputPath, options = {}) {
+  validateOutputPath(outputPath);
+  let finalContent = content;
+  
+  // If image path is provided and includeImage is not explicitly false
+  if (options.imagePath && options.includeImage !== false) {
+    const relativeImagePath = copyImageFile(options.imagePath, outputPath);
+    
+    // If image was successfully copied, add it to the markdown
+    if (relativeImagePath) {
+      finalContent = `![Aesthetic Image](${relativeImagePath})\n\n${content}`;
+    }
+  }
+  
+  try {
+    fs.writeFileSync(outputPath, finalContent, { encoding: "utf8" });
     return outputPath;
   } catch (error) {
     throw new Error(`Failed to write output: ${error.message}`);
@@ -50,5 +91,6 @@ function writeOutput(content, outputPath) {
 
 module.exports = {
   validateOutputPath,
-  writeOutput
+  writeOutput,
+  copyImageFile
 };

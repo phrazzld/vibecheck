@@ -106,6 +106,30 @@ function viewInTerminal(filePath) {
 }
 
 /**
+ * Displays a summary of selected options
+ * @param {Object} options - Selected options for the analysis
+ */
+function displayOptionsSummary(options) {
+  console.log(styles.createSection("Selected Options", ""));
+  
+  const optionsTable = [
+    ["Image", options.image ? path.basename(options.image) : "None"],
+    ["Output", options.output],
+    ["Detail Level", options.detail],
+    ["Model", options.model],
+    ["Include Image", options.image !== false ? "Yes" : "No"]
+  ];
+  
+  // Format the table with some nice styling
+  const formattedTable = optionsTable.map(([key, value]) => {
+    return `  ${chalk.hex(styles.colors.tertiary)(key)}: ${value}`;
+  }).join("\n");
+  
+  console.log(formattedTable);
+  console.log("");
+}
+
+/**
  * Performs post-analysis actions
  * @param {string} outputPath - Path to the output file
  * @param {string} markdownContent - Content of the markdown file
@@ -113,7 +137,7 @@ function viewInTerminal(filePath) {
 async function performPostAnalysisActions(outputPath, markdownContent) {
   console.log(styles.createSection("Next Steps", ""));
   
-  const action = await prompts.promptForNextAction();
+  const action = await prompts.promptForNextAction(["edit", "view", "extract", "exit"]);
   
   switch (action) {
     case "edit":
@@ -134,6 +158,7 @@ async function performPostAnalysisActions(outputPath, markdownContent) {
         console.log(styles.warning("No colors found in the aesthetic guide."));
       }
       break;
+    case "cancel": // New option to gracefully cancel
     case "exit":
     default:
       console.log(styles.info("\nThanks for using vibecheck! ✨"));
@@ -149,5 +174,6 @@ module.exports = {
   getImageInfo,
   openInEditor,
   viewInTerminal,
+  displayOptionsSummary,
   performPostAnalysisActions
 };

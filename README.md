@@ -1,26 +1,26 @@
 # vibecheck ✨
 
-Transform images into comprehensive aesthetic style guides for software designers with a beautiful interactive CLI experience.
+Transform any image into a detailed aesthetic style guide for software designers through an elegant CLI experience.
 
 ![vibecheck CLI](https://github.com/phrazzld/vibecheck/assets/images/vibecheck-demo.gif)
 
 ## Features
 
-- 🎨 Extract aesthetic style guides from any image using OpenAI's vision models
-- ✨ Beautiful interactive CLI with color, animations, and styled output
-- 🧙‍♂️ Guided wizard mode for step-by-step analysis
-- 🌈 Color palette visualization in terminal
-- 📊 Real-time progress tracking with elegant spinners
-- 📝 Comprehensive style guides with typography, colors, UI elements, and more
-- 🚀 Flexible configuration with multiple detail levels and model options
+- 🎨 Generate complete aesthetic style guides from images using OpenAI's vision models
+- ✨ Elegant CLI with subtle colors, animations and thoughtful visual design
+- 🧙‍♂️ Guided interactive mode for effortless workflow
+- 🌈 Terminal-based color palette visualization
+- 📊 Clear progress indicators with contextual feedback
+- 📝 Rich style guides including typography, colors, UI elements, and design principles
+- 🚀 Configurable detail levels and model selection for optimal results
 
 ## Installation
 
 ```bash
-# Install globally from npm (recommended)
+# Install globally (recommended)
 npm install -g vibecheck
 
-# Or clone and install from source
+# Or install from source
 git clone https://github.com/phrazzld/vibecheck.git
 cd vibecheck
 npm install
@@ -29,41 +29,43 @@ npm link
 
 ## Usage
 
-### Interactive Mode (Recommended)
+### Interactive Mode
 
 ```bash
-# Launch the interactive wizard
-vibecheck --interactive
+# Start the guided experience (recommended)
+vibecheck
 ```
 
-### Command Line
+### Command Line Options
 
 ```bash
-# Basic usage
+# Analyze an image with default settings
 vibecheck --image path/to/image.jpg
 
-# Set output file
+# Save to custom file
 vibecheck --image path/to/image.jpg --output design-system.md
 
-# Choose detail level (low, auto, high)
+# Set detail level (low, auto, high)
 vibecheck --image path/to/image.jpg --detail high
 
-# Use a faster model
+# Use faster model for quicker results
 vibecheck --image path/to/image.jpg --model gpt-4o-mini
 
-# Disable colors
+# Disable color output
 vibecheck --image path/to/image.jpg --no-color
+
+# Skip welcome message
+vibecheck --image path/to/image.jpg --skip-welcome
 ```
 
-### Required Environment Variable
+### Required Configuration
 
 ```bash
+# Set your OpenAI API key
 export OPENAI_API_KEY=your-api-key-here
 ```
 
-## Output Examples
-
-The tool generates comprehensive style guides including:
+## Output Example
 
 ```markdown
 # Neo-Brutalist Cityscape
@@ -72,25 +74,27 @@ The tool generates comprehensive style guides including:
 - Primary: #FF4D00 - Vibrant orange for key elements
 - Secondary: #1A1A1A - Deep black for backgrounds
 - Accent: #FFD600 - Bright yellow for highlights
-...
 
 ## Typography
 - Headings: Sans-serif, bold, oversized with tight tracking
 - Body: Monospace with medium weight
-...
 ```
 
 ## Customization
 
-Edit `src/prompt.txt` to customize the analysis focus and style guide format.
+Modify `src/prompt.txt` to customize the analysis parameters and output format.
 
 ## Development
 
 ```bash
-# Run tests
+# Run all tests
 npm test
 
-# Check code style
+# Run specific test suites
+npm run test:unit
+npm run test:integration
+
+# Lint code
 npm run lint
 ```
 

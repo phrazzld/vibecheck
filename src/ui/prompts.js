@@ -192,6 +192,124 @@ async function promptForNextAction(options = ["edit", "view", "extract", "exit"]
 }
 
 /**
+ * Displays a styled mode selection menu
+ * @returns {Promise<string>} - Selected mode
+ */
+async function promptForMode() {
+  const boxen = require("boxen");
+  
+  // Create a styled box for the mode selection
+  const modeBox = boxen(
+    `              CHOOSE YOUR PATH               
+${chalk.dim("───────────────────────────────────────────")}
+  ${chalk.hex(colors.accent)("✨")} GUIDED JOURNEY  ${chalk.dim("(Interactive)")}      
+  ${chalk.hex(colors.secondary)("🚀")} QUICK ANALYSIS ${chalk.dim("(Command Line)")}      
+  ${chalk.hex(colors.info)("🔮")} LAST SESSION   ${chalk.dim("(Repeat Settings)")}   `,
+    {
+      padding: 0,
+      margin: 1,
+      borderStyle: "round",
+      borderColor: colors.primary,
+      backgroundColor: "#00000000"
+    }
+  );
+  
+  console.log(boxen);
+  
+  const { mode } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "mode",
+      message: "Select your preferred experience:",
+      prefix: "  ",
+      choices: [
+        { value: "guided", name: "✨ Guided Journey" },
+        { value: "quick", name: "🚀 Quick Analysis" },
+        { value: "last", name: "🔮 Last Session" }
+      ]
+    }
+  ]);
+  
+  return mode;
+}
+
+/**
+ * Displays the welcome narrative
+ */
+function showWelcomeNarrative() {
+  const boxen = require("boxen");
+  
+  // Create a styled welcome message
+  const welcomeBox = boxen(
+    `⊹ Welcome to your aesthetic expedition ⊹
+We'll transform visual inspiration into design language.
+Let's begin our creative archaeology...`,
+    {
+      padding: 1,
+      margin: 1,
+      borderStyle: "round",
+      borderColor: colors.accent,
+      backgroundColor: "#00000000"
+    }
+  );
+  
+  console.log(welcomeBox);
+}
+
+/**
+ * Prompts for style preferences
+ * @returns {Promise<Object>} - Selected preferences
+ */
+async function promptForStylePreferences() {
+  const boxen = require("boxen");
+  
+  // Create a styled preferences box
+  const preferencesBox = boxen(
+    `STYLE PREFERENCES`,
+    {
+      padding: 0,
+      margin: 0,
+      borderStyle: "round",
+      borderColor: colors.secondary,
+      backgroundColor: "#00000000"
+    }
+  );
+  
+  console.log(preferencesBox);
+  
+  const { designPhilosophy } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "designPhilosophy",
+      message: "What's your design philosophy?",
+      prefix: "  ",
+      choices: [
+        { value: "minimalist", name: "Minimalist" },
+        { value: "expressive", name: "Expressive" },
+        { value: "balanced", name: "Balanced" }
+      ]
+    }
+  ]);
+  
+  const { application } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "application",
+      message: "Primary application of this guide?",
+      prefix: "  ",
+      choices: [
+        { value: "web", name: "Web" },
+        { value: "mobile", name: "Mobile" },
+        { value: "print", name: "Print" },
+        { value: "other", name: "Other" }
+      ]
+    }
+  ]);
+  
+  return { designPhilosophy, application };
+}
+
+/**
  * Prompts for interactive mode
  * @returns {Promise<Object>} - All selected options
  */
@@ -199,8 +317,14 @@ async function promptInteractive() {
   // Get references to styles
   const { createSection } = require("./styles");
   
+  // Show welcome narrative if this is the guided journey
+  showWelcomeNarrative();
+  
   console.log(createSection("Image Selection", ""));
   const imagePath = await promptForImagePath();
+  
+  // Get style preferences
+  const preferences = await promptForStylePreferences();
   
   console.log(createSection("Analysis Options", ""));
   const detailLevel = await promptForDetailLevel();
@@ -213,10 +337,12 @@ async function promptInteractive() {
   console.log("");
   
   return {
-    imagePath,
-    detailLevel,
-    model,
-    outputPath
+    image: imagePath,
+    detail: detailLevel,
+    model: model,
+    output: outputPath,
+    designPhilosophy: preferences.designPhilosophy,
+    application: preferences.application
   };
 }
 
@@ -226,5 +352,8 @@ module.exports = {
   promptForOutputPath,
   promptForModel,
   promptForNextAction,
+  promptForMode,
+  showWelcomeNarrative,
+  promptForStylePreferences,
   promptInteractive
 };

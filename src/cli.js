@@ -25,6 +25,7 @@ function createCli() {
     .option("--no-color", "Disable colored output")
     .option("--no-image", "Don't include the image in the output file")
     .option("--cancel", "Exit interactive mode gracefully")
+    .option("--skip-mode-selection", "Skip the mode selection screen")
     .addHelpText("after", `
 Examples:
   $ vibecheck --image path/to/image.jpg

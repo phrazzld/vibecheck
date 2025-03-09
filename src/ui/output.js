@@ -97,6 +97,7 @@ function createSummary(markdown) {
  */
 function createSuccessMessage(outputPath) {
   const terminalWidth = process.stdout.columns || 80;
+  const boxen = require("boxen");
   
   // Create a clickable link to the file
   const link = terminalLink(outputPath, `file://${outputPath}`);
@@ -104,11 +105,23 @@ function createSuccessMessage(outputPath) {
   // Format the path to handle long paths
   const displayPath = formatPath(outputPath);
   
-  // Create the success section
-  return createSection("Success", 
-    `  ${chalk.green("✨")} Your aesthetic guide has been generated!\n\n` +
-    `  ${chalk.dim("File saved to:")}\n  ${chalk.cyan(link)}`
+  // Create a more visually appealing success message
+  const successBox = boxen(
+    `${chalk.hex(colors.success).bold("AESTHETIC GUIDE CREATED!")}
+    
+${chalk.dim("File saved to:")}
+${chalk.hex(colors.info)(link)}`,
+    {
+      padding: 1,
+      margin: 1,
+      borderStyle: "round",
+      borderColor: colors.success,
+      backgroundColor: "#00000000"
+    }
   );
+  
+  // Return the styled message
+  return successBox;
 }
 
 /**

@@ -10,16 +10,16 @@ const { colors, step } = require("./styles");
 // Custom spinner frames for a more aesthetic experience
 const spinnerFrames = {
   aesthetic: {
-    frames: ["◜", "◠", "◝", "◞", "◡", "◟"],
-    interval: 80
+    frames: ["⠂", "⠄", "⠆", "⠇", "⠋", "⠙", "⠸", "⠰", "⠠", "⠀"],
+    interval: 150
   },
   dots: {
-    frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-    interval: 80
+    frames: ["⠋", "⠙", "⠚", "⠞", "⠖", "⠦", "⠴", "⠲", "⠳"],
+    interval: 150
   },
   pulse: {
-    frames: ["█", "▓", "▒", "░", "▒", "▓"],
-    interval: 120
+    frames: ["▪", "▫"],
+    interval: 400
   }
 };
 
@@ -57,16 +57,21 @@ function createMultiSpinner(tasks) {
   let active = false;
   
   const renderSpinners = () => {
-    console.clear();
+    // Don't clear console, just update the lines we need
+    if (!active) return;
+    
+    process.stdout.write("\r\x1b[K"); // Clear current line
+    
+    let output = "";
     spinners.forEach((spinner, index) => {
       let prefix;
       
       if (spinner.status === "pending") {
         if (index === currentIndex) {
-          const frame = spinner.spinner.frames[Math.floor(Date.now() / spinner.spinner.interval) % spinner.spinner.frames.length];
-          prefix = chalk.cyan(frame);
+          const frameIndex = Math.floor(Date.now() / spinner.spinner.interval) % spinner.spinner.frames.length;
+          prefix = chalk.cyan(spinner.spinner.frames[frameIndex]);
         } else {
-          prefix = chalk.dim("○");
+          prefix = chalk.dim("·");
         }
       } else if (spinner.status === "success") {
         prefix = chalk.hex(colors.success)("✓");
@@ -74,13 +79,18 @@ function createMultiSpinner(tasks) {
         prefix = chalk.hex(colors.error)("✗");
       }
       
-      console.log(`${prefix} ${spinner.text}`);
+      output += `${prefix} ${spinner.text}`;
+      if (index < spinners.length - 1) {
+        output += "\n";
+      }
     });
+    
+    process.stdout.write(output);
   };
   
   const start = () => {
     active = true;
-    timer = setInterval(renderSpinners, 50);
+    timer = setInterval(renderSpinners, 150);
     return api;
   };
   
@@ -132,25 +142,117 @@ function createMultiSpinner(tasks) {
 /**
  * Creates a progress bar
  * @param {string} format - Format string for the progress bar
+ * @param {Object} options - Additional options for the progress bar
  * @returns {Object} - CLI progress bar instance
  */
-function createProgressBar(format = "Analyzing: {bar} | {percentage}% | {value}/{total} tasks") {
+function createProgressBar(format = "Analyzing: {bar} | {percentage}%", options = {}) {
   const progressBar = new cliProgress.SingleBar({
     format,
-    barCompleteChar: "█",
-    barIncompleteChar: "░",
+    barCompleteChar: "━",
+    barIncompleteChar: "╌",
     hideCursor: true,
     clearOnComplete: true,
-    barsize: 30,
-    forceRedraw: true
+    barsize: 20,
+    forceRedraw: false,
+    fps: 5,
+    ...options
   }, cliProgress.Presets.shades_classic);
   
   return progressBar;
+}
+
+/**
+ * Creates a stylized process progress bar
+ * @param {Array} steps - Array of process step names
+ * @returns {Object} - Object with progress bar and control methods
+ */
+function createProcessBar(steps) {
+  // Define colors for the progress bar
+  const barColor = chalk.hex(colors.secondary);
+  const textColor = chalk.hex(colors.tertiary);
+  const completedStepColor = chalk.hex(colors.success);
+  const activeStepColor = chalk.hex(colors.accent);
+  const pendingStepColor = chalk.dim;
+  
+  // Create a simple, non-seizure-inducing format
+  const format = `{stepName} | ${textColor('{percentage}%')} ${barColor('{bar}')}`;
+  
+  const progressBar = createProgressBar(format, {
+    barsize: 15,
+    barCompleteChar: "━",
+    barIncompleteChar: "╌",
+    forceRedraw: false,
+    fps: 5
+  });
+  
+  let currentStep = 0;
+  let totalSteps = steps.length;
+  
+  // Initialize progress bar
+  const start = () => {
+    progressBar.start(totalSteps, 0, {
+      stepName: getStepDisplay()
+    });
+    return api;
+  };
+  
+  // Update to a specific step
+  const updateStep = (step) => {
+    if (step >= 0 && step <= totalSteps) {
+      currentStep = step;
+      progressBar.update(currentStep, {
+        stepName: getStepDisplay()
+      });
+    }
+    return api;
+  };
+  
+  // Move to the next step
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      currentStep++;
+      progressBar.update(currentStep, {
+        stepName: getStepDisplay()
+      });
+      
+      if (currentStep === totalSteps) {
+        progressBar.stop();
+      }
+    }
+    return api;
+  };
+  
+  // Complete the progress bar
+  const complete = (message = "Complete") => {
+    currentStep = totalSteps;
+    progressBar.update(totalSteps, {
+      stepName: completedStepColor(message)
+    });
+    progressBar.stop();
+    return api;
+  };
+  
+  // Get a formatted display of the current step
+  const getStepDisplay = () => {
+    const step = steps[currentStep];
+    return activeStepColor(step);
+  };
+  
+  const api = {
+    start,
+    updateStep,
+    nextStep,
+    complete,
+    bar: progressBar
+  };
+  
+  return api;
 }
 
 module.exports = {
   createSpinner,
   createMultiSpinner,
   createProgressBar,
+  createProcessBar,
   spinnerFrames
 };

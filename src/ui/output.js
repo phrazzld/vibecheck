@@ -97,7 +97,6 @@ function createSummary(markdown) {
  */
 function createSuccessMessage(outputPath) {
   const terminalWidth = process.stdout.columns || 80;
-  const boxen = require("boxen");
   
   // Create a clickable link to the file
   const link = terminalLink(outputPath, `file://${outputPath}`);
@@ -105,23 +104,14 @@ function createSuccessMessage(outputPath) {
   // Format the path to handle long paths
   const displayPath = formatPath(outputPath);
   
-  // Create a more visually appealing success message
-  const successBox = boxen(
-    `${chalk.hex(colors.success).bold("AESTHETIC GUIDE CREATED!")}
-    
-${chalk.dim("File saved to:")}
-${chalk.hex(colors.info)(link)}`,
-    {
-      padding: 1,
-      margin: 1,
-      borderStyle: "round",
-      borderColor: colors.success,
-      backgroundColor: "#00000000"
-    }
-  );
+  // Create success message without box
+  return `
+  ${chalk.hex(colors.success).bold("✨ AESTHETIC GUIDE CREATED!")}
+  ${chalk.dim("───────────────────────────────────────────")}
   
-  // Return the styled message
-  return successBox;
+  ${chalk.dim("File saved to:")}
+  ${chalk.hex(colors.info)(link)}
+`;
 }
 
 /**

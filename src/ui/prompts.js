@@ -196,25 +196,14 @@ async function promptForNextAction(options = ["edit", "view", "extract", "exit"]
  * @returns {Promise<string>} - Selected mode
  */
 async function promptForMode() {
-  const boxen = require("boxen");
+  // Print header
+  console.log(`\n  ${chalk.hex(colors.primary).bold("CHOOSE YOUR PATH")}\n`);
+  console.log(chalk.dim("  ───────────────────────────────────────────"));
   
-  // Create a styled box for the mode selection
-  const modeBox = boxen(
-    `              CHOOSE YOUR PATH               
-${chalk.dim("───────────────────────────────────────────")}
-  ${chalk.hex(colors.accent)("✨")} GUIDED JOURNEY  ${chalk.dim("(Interactive)")}      
-  ${chalk.hex(colors.secondary)("🚀")} QUICK ANALYSIS ${chalk.dim("(Command Line)")}      
-  ${chalk.hex(colors.info)("🔮")} LAST SESSION   ${chalk.dim("(Repeat Settings)")}   `,
-    {
-      padding: 0,
-      margin: 1,
-      borderStyle: "round",
-      borderColor: colors.primary,
-      backgroundColor: "#00000000"
-    }
-  );
-  
-  console.log(boxen);
+  // Print options without box
+  console.log(`\n  ${chalk.hex(colors.accent)("✨")} GUIDED JOURNEY  ${chalk.dim("(Interactive)")}`);
+  console.log(`  ${chalk.hex(colors.secondary)("🚀")} QUICK ANALYSIS ${chalk.dim("(Command Line)")}`);
+  console.log(`  ${chalk.hex(colors.info)("🔮")} LAST SESSION   ${chalk.dim("(Repeat Settings)")}\n`);
   
   const { mode } = await inquirer.prompt([
     {
@@ -237,23 +226,11 @@ ${chalk.dim("──────────────────────�
  * Displays the welcome narrative
  */
 function showWelcomeNarrative() {
-  const boxen = require("boxen");
-  
-  // Create a styled welcome message
-  const welcomeBox = boxen(
-    `⊹ Welcome to your aesthetic expedition ⊹
-We'll transform visual inspiration into design language.
-Let's begin our creative archaeology...`,
-    {
-      padding: 1,
-      margin: 1,
-      borderStyle: "round",
-      borderColor: colors.accent,
-      backgroundColor: "#00000000"
-    }
-  );
-  
-  console.log(welcomeBox);
+  // Display welcome message without box
+  console.log(`\n  ${chalk.hex(colors.accent)("⊹ Welcome to your aesthetic expedition ⊹")}`);
+  console.log(`  We'll transform visual inspiration into design language.`);
+  console.log(`  Let's begin our creative archaeology...\n`);
+  console.log(chalk.dim("  ───────────────────────────────────────────\n"));
 }
 
 /**
@@ -261,21 +238,9 @@ Let's begin our creative archaeology...`,
  * @returns {Promise<Object>} - Selected preferences
  */
 async function promptForStylePreferences() {
-  const boxen = require("boxen");
-  
-  // Create a styled preferences box
-  const preferencesBox = boxen(
-    `STYLE PREFERENCES`,
-    {
-      padding: 0,
-      margin: 0,
-      borderStyle: "round",
-      borderColor: colors.secondary,
-      backgroundColor: "#00000000"
-    }
-  );
-  
-  console.log(preferencesBox);
+  // Display header without box
+  console.log(`\n  ${chalk.hex(colors.secondary).bold("STYLE PREFERENCES")}`);
+  console.log(chalk.dim("  ───────────────────────────────────────────\n"));
   
   const { designPhilosophy } = await inquirer.prompt([
     {

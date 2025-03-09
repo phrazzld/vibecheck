@@ -9,6 +9,9 @@
   "type": "commonjs",
   "scripts": {
     "test": "jest",
+    "test:unit": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "test:watch": "jest --watch",
     "lint": "eslint .",
     "start": "node src/index.js"
   },

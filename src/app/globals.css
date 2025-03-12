@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #9D50BB;
+  --secondary: #6E48AA;
+  --success: #2ECC71;
+  --error: #E74C3C;
 }
 
 @theme inline {
@@ -22,5 +26,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+}
+
+.prose pre {
+  max-width: 100%;
+  overflow-x: auto;
 }

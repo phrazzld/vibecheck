@@ -43,6 +43,11 @@ vibecheck is a Next.js TypeScript web application that uses OpenAI's vision mode
    ```bash
    npm run dev
    ```
+   
+   Or with logging enabled:
+   ```bash
+   npm run dev:log
+   ```
 
 5. Open [http://localhost:3000](http://localhost:3000) with your browser
 
@@ -53,6 +58,31 @@ vibecheck is a Next.js TypeScript web application that uses OpenAI's vision mode
 3. Choose the AI model (GPT-4o or GPT-4o Mini)
 4. Click "Analyze Image"
 5. View and download your generated style guide
+
+## Development Tools
+
+### Logging and Observability
+
+The application includes a robust logging system to help track development and debug issues:
+
+```bash
+# Start the development server with logging enabled
+npm run dev:log
+
+# View all logs
+npm run logs:view
+
+# View only error messages
+npm run logs:errors
+
+# Watch logs in real-time (like tail -f)
+npm run logs:tail
+
+# View only the last 100 lines (customize the number)
+npm run logs:view -- -l -n 100
+```
+
+Log files are stored in the `/logs` directory and automatically rotated each time `dev:log` is run, keeping your history organized while preventing excessive disk usage.
 
 ## Technologies
 

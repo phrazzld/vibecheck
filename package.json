@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:log": "node scripts/log-dev.js",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "logs:rotate": "node scripts/rotate-logs.js",
+    "logs:view": "node scripts/view-logs.js",
+    "logs:errors": "node scripts/view-logs.js --errors",
+    "logs:tail": "node scripts/view-logs.js --tail"
   },
   "dependencies": {
     "next": "15.2.2",

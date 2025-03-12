@@ -6,21 +6,50 @@
 :root {
   /* Primary Palette */
   --color-primary: #5D5FEF;
+  --color-primary-light: #7577FF;
+  --color-primary-dark: #4A4CD6;
+  --color-primary-contrast: #FFFFFF;
   --color-background: #1A1A2E;
   --color-surface: #FFFFFF;
   --color-soft-bg: #F5F5F7;
   
   /* Secondary Palette */
   --color-mint: #3EDBCF;
+  --color-mint-light: #68F0E6;
+  --color-mint-dark: #2ABEB3;
   --color-pink: #FF2E63;
+  --color-pink-light: #FF6B91;
+  --color-pink-dark: #E01A4F;
   --color-yellow: #FFD460;
+  --color-yellow-light: #FFE28A;
+  --color-yellow-dark: #FFBF00;
   --color-lavender: #E5E1FF;
+  --color-lavender-light: #F0EDFF;
+  --color-lavender-dark: #C4BCFF;
+  
+  /* Accent Colors - Derived from Primary */
+  --color-accent-1: #7D5DF9; /* Violet accent */
+  --color-accent-2: #5F8AFF; /* Blue accent */
+  --color-accent-3: #C264DC; /* Purple accent */
+  
+  /* Gradient Definitions */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-2) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--color-mint) 0%, var(--color-primary-light) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--color-accent-3) 0%, var(--color-primary) 100%);
   
   /* Semantic Colors */
   --color-success: #34D399;
+  --color-success-light: #6EE7B7;
+  --color-success-dark: #10B981;
   --color-error: #EF4444;
+  --color-error-light: #F87171;
+  --color-error-dark: #DC2626;
   --color-warning: #F59E0B;
+  --color-warning-light: #FBBF24;
+  --color-warning-dark: #D97706;
   --color-info: #3B82F6;
+  --color-info-light: #60A5FA;
+  --color-info-dark: #2563EB;
 
   /* UI Colors */
   --color-foreground: #1A1A2E;
@@ -80,7 +109,28 @@
     
     /* Adjusted for dark mode */
     --color-primary: #7577FF;
+    --color-primary-light: #9698FF;
+    --color-primary-dark: #5355DB;
+    
+    /* Secondary Palette Adjustments */
+    --color-mint: #3EDBCF;
+    --color-mint-dark: #2ABEB3;
+    --color-mint-light: #68F0E6;
     --color-lavender: #38395E;
+    --color-lavender-light: #494A77;
+    --color-lavender-dark: #2A2B46;
+    --color-pink-light: #FF6B91;
+    --color-yellow-light: #FFE28A;
+    
+    /* Accent Adjustments */
+    --color-accent-1: #8D6DFF;
+    --color-accent-2: #6F9AFF;
+    --color-accent-3: #D274EC;
+    
+    /* Gradient Adjustments */
+    --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-2) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--color-mint) 0%, var(--color-primary-light) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--color-accent-3) 0%, var(--color-primary) 100%);
   }
 }
 
@@ -181,7 +231,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background-color: var(--color-primary);
+  background: var(--gradient-primary);
+  background-size: 150% 150%;
   color: white;
   font-family: var(--font-primary);
   font-weight: 600;
@@ -190,15 +241,39 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   border: none;
   transition: all var(--transition-standard);
+  box-shadow: 0 4px 6px rgba(93, 95, 239, 0.1), 0 1px 3px rgba(93, 95, 239, 0.08);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-primary:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  background-size: 150% 150%;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity var(--transition-standard);
+  filter: brightness(1.1);
 }
 
 .btn-primary:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 90%, white);
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 14px rgba(93, 95, 239, 0.15), 0 3px 6px rgba(93, 95, 239, 0.1);
+}
+
+.btn-primary:hover:before {
+  opacity: 1;
 }
 
 .btn-primary:active {
-  background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(93, 95, 239, 0.1);
 }
 
 .btn-secondary {
@@ -211,11 +286,43 @@ h1, h2, h3, h4, h5, h6 {
   padding: 12px 20px;
   border-radius: var(--radius-md);
   transition: all var(--transition-standard);
+  box-shadow: 0 1px 2px rgba(93, 95, 239, 0.05);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-secondary:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, 
+    var(--color-lavender-light) 0%, 
+    var(--color-lavender) 50%, 
+    var(--color-lavender-light) 100%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-standard);
+  z-index: -1;
 }
 
 .btn-secondary:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(93, 95, 239, 0.1);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-light);
+}
+
+.btn-secondary:hover:before {
+  opacity: 0.15;
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(93, 95, 239, 0.05);
 }
 
 .btn-tertiary {
@@ -228,10 +335,49 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   border: none;
   transition: all var(--transition-standard);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-tertiary:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-foreground);
+  opacity: 0;
+  transition: opacity var(--transition-standard);
+  z-index: -1;
 }
 
 .btn-tertiary:hover {
-  background-color: color-mix(in srgb, var(--color-foreground) 5%, transparent);
+  transform: translateY(-1px);
+}
+
+.btn-tertiary:hover:before {
+  opacity: 0.05;
+}
+
+.btn-tertiary:active {
+  transform: translateY(1px);
+}
+
+/* Accent buttons */
+.btn-accent-1 {
+  background: linear-gradient(135deg, var(--color-accent-1) 0%, var(--color-primary) 100%);
+  color: white;
+}
+
+.btn-accent-2 {
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-primary-light) 100%);
+  color: white;
+}
+
+.btn-accent-3 {
+  background: linear-gradient(135deg, var(--color-accent-3) 0%, var(--color-primary) 100%);
+  color: white;
 }
 
 /* Form Elements */

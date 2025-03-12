@@ -71,11 +71,18 @@ export default function Home() {
     <div className="min-h-screen p-6 md:p-8 pb-20">
       <header className="flex flex-col items-center mb-16 md:mb-24">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#5D5FEF] to-[#3EDBCF] opacity-10 blur-xl rounded-full"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-accent-2)] to-[var(--color-mint)] opacity-15 blur-xl rounded-full"></div>
           <div className="flex items-center">
             <h1 
-              className="text-4xl sm:text-5xl font-bold text-[#5D5FEF]"
-              style={{ fontFamily: 'var(--font-accent)' }}
+              className="text-4xl sm:text-5xl font-bold"
+              style={{ 
+                fontFamily: 'var(--font-accent)',
+                background: 'var(--gradient-primary)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundSize: '150% 150%',
+                animation: 'gradient 6s ease infinite'
+              }}
             >
               vibecheck
             </h1>
@@ -129,7 +136,11 @@ export default function Home() {
           <div className="space-y-8">
             <button
               onClick={() => setState((prev) => ({ ...prev, result: null }))}
-              className="btn-tertiary flex items-center gap-2"
+              className="btn-secondary flex items-center gap-2"
+              style={{
+                borderImage: 'var(--gradient-secondary) 1',
+                borderImageSlice: '1'
+              }}
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 

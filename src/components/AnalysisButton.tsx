@@ -18,12 +18,14 @@ export default function AnalysisButton({
           btn-primary w-full py-4 px-6 rounded-[var(--radius-md)] 
           ${disabled || isLoading 
             ? "opacity-50 cursor-not-allowed" 
-            : "hover:shadow-lg hover:scale-[1.02]"
+            : ""
           }
         `}
         style={{ 
           fontFamily: 'var(--font-primary)',
-          transition: 'all var(--transition-standard)'
+          transition: 'all var(--transition-standard)',
+          background: 'var(--gradient-primary)',
+          backgroundSize: '200% 200%',
         }}
       >
         {isLoading ? (

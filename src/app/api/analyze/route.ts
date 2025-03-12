@@ -29,12 +29,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate the prompt based on detail level
-    const prompt = generatePrompt(body.detail);
+    // Generate the prompt
+    const prompt = generatePrompt();
 
     // Create the API request
     const response = await openai.chat.completions.create({
-      model: body.model,
+      model: "gpt-4o",
       messages: [
         {
           role: "system",

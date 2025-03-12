@@ -61,9 +61,35 @@
   --color-markdown-bg: #F9FAFB;
   
   /* Typography */
-  --font-primary: 'Inter', sans-serif;
-  --font-accent: 'Space Grotesk', sans-serif;
+  --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Type Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
   
   /* Spacing */
   --space-xs: 4px;
@@ -243,11 +269,104 @@ body {
   filter: blur(60px);
 }
 
-/* Typography */
+/* Typography System */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-accent);
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  margin-top: 0;
+  color: var(--color-foreground);
+}
+
+h1 {
+  font-size: var(--text-5xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tighter);
+  margin-bottom: 1.5rem;
+}
+
+h2 { 
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+h3 {
+  font-size: var(--text-2xl);
+  margin-bottom: 1rem;
+}
+
+h4 {
+  font-size: var(--text-xl);
+  margin-bottom: 0.75rem;
+}
+
+h5 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+h6 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs */
+p {
+  margin-bottom: 1rem;
+  line-height: var(--leading-relaxed);
+}
+
+/* Text Emphasis */
+.text-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.text-semibold {
+  font-weight: 600;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-light {
+  font-weight: 300;
+}
+
+/* Link text */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all var(--transition-quick);
+}
+
+a:hover {
+  color: var(--color-primary-light);
+  text-decoration: underline;
 }
 
 /* UI Components */
@@ -478,9 +597,51 @@ h1, h2, h3, h4, h5, h6 {
 .markdown h1, 
 .markdown h2,
 .markdown h3,
-.markdown h4 {
-  font-family: var(--font-accent);
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  font-family: var(--font-display);
   color: var(--color-primary);
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.markdown h1 {
+  font-size: var(--text-3xl);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+}
+
+.markdown h2 {
+  font-size: var(--text-2xl);
+}
+
+.markdown h3 {
+  font-size: var(--text-xl);
+}
+
+.markdown h4 {
+  font-size: var(--text-lg);
+}
+
+.markdown p {
+  line-height: var(--leading-relaxed);
+  margin-bottom: 1.25em;
+}
+
+.markdown ul, 
+.markdown ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25em;
+  line-height: var(--leading-relaxed);
+}
+
+.markdown li {
+  margin-bottom: 0.5em;
+}
+
+.markdown strong {
+  font-weight: 600;
 }
 
 /* Loader */

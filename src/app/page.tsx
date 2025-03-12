@@ -74,14 +74,16 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-accent-2)] to-[var(--color-mint)] opacity-15 blur-xl rounded-full"></div>
           <div className="flex items-center">
             <h1 
-              className="text-4xl sm:text-5xl font-bold"
+              className="text-5xl sm:text-5xl"
               style={{ 
-                fontFamily: 'var(--font-accent)',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 800,
                 background: 'var(--gradient-primary)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundSize: '150% 150%',
-                animation: 'gradient 6s ease infinite'
+                animation: 'gradient 6s ease infinite',
+                letterSpacing: 'var(--tracking-tighter)'
               }}
             >
               vibecheck
@@ -90,10 +92,10 @@ export default function Home() {
         </div>
         
         <div className="mt-8 max-w-lg text-center">
-          <p className="text-lg">
+          <p className="text-lg text-semibold" style={{ fontWeight: 500 }}>
             Transform your images into detailed UI style guides with AI.
           </p>
-          <p className="mt-2 text-[#1A1A2E]/70 dark:text-[#E5E7EB]/70 text-base">
+          <p className="mt-2 text-[var(--color-foreground)]/70 text-base">
             Upload an image and get a comprehensive style guide for your design system.
           </p>
         </div>
@@ -103,7 +105,7 @@ export default function Home() {
         {!state.result ? (
           <div className="space-y-12">
             <section className="section section-primary">
-              <h2 className="text-2xl mb-8 text-center text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-accent)' }}>
+              <h2 className="mb-8 text-center text-[var(--color-primary)]">
                 Upload an Image
               </h2>
               <ImageUpload 
@@ -114,10 +116,10 @@ export default function Home() {
 
             {state.image && (
               <section className="section section-secondary flex flex-col items-center">
-                <h2 className="text-2xl mb-6 text-center text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-accent)' }}>
+                <h2 className="mb-6 text-center text-[var(--color-primary)]">
                   Generate Style Guide
                 </h2>
-                <p className="text-center text-[var(--color-foreground)]/70 dark:text-[var(--color-foreground)]/70 mb-8 max-w-lg">
+                <p className="text-center text-[var(--color-foreground)]/70 mb-8 max-w-lg" style={{ lineHeight: 'var(--leading-relaxed)' }}>
                   Our AI will analyze your image and generate a comprehensive style guide including colors, typography, spacing, and design patterns.
                 </p>
                 
@@ -166,8 +168,8 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-16 mb-8 pt-8 text-center text-sm text-[var(--color-foreground)]/50 border-t border-[var(--color-divider)]">
-        <p>© 2025 vibecheck • AI-powered design style guide generation</p>
+      <footer className="mt-16 mb-8 pt-8 text-center border-t border-[var(--color-divider)]">
+        <p className="text-sm text-[var(--color-foreground)]/50" style={{ marginBottom: 0 }}>© 2025 vibecheck • AI-powered design style guide generation</p>
       </footer>
 
       <LoadingIndicator isLoading={isLoading} />

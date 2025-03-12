@@ -74,11 +74,14 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
   
   return (
     <div 
-      className={`fixed inset-0 bg-[var(--color-background)]/80 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-500 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 bg-[var(--color-background)]/80 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-500 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
     >
       <div 
-        className="card p-8 rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] flex flex-col items-center max-w-sm w-full relative overflow-hidden animate-slide-in"
-        style={{ backgroundColor: 'var(--color-card-bg)' }}
+        className="card p-8 rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] flex flex-col items-center max-w-sm w-full relative overflow-hidden animate-slide-in hover:shadow-[var(--shadow-lg)] transition-all duration-300"
+        style={{ 
+          backgroundColor: 'var(--color-card-bg)',
+          transform: isLoading ? 'scale(1)' : 'scale(0.95)',
+        }}
       >
         {/* Background gradient */}
         <div 
@@ -168,7 +171,11 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span 
                     className="text-[var(--color-primary)] font-medium text-xl"
-                    style={{ transition: 'all 0.3s ease-out' }}
+                    style={{ 
+                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      transform: percentage % 10 === 0 ? 'scale(1.15)' : 'scale(1)',
+                      filter: percentage % 10 === 0 ? 'brightness(1.2)' : 'brightness(1)'
+                    }}
                   >
                     {percentage}%
                   </span>
@@ -245,15 +252,27 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
           </div>
           
           {/* Progress bar with smoother transition */}
-          <div className="mt-6 w-full bg-[var(--color-soft-bg)] rounded-full h-1 overflow-hidden">
+          <div className="mt-6 w-full bg-[var(--color-soft-bg)] rounded-full h-1.5 overflow-hidden shadow-inner">
             <div 
-              className="h-full bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-mint)] to-[var(--color-primary)] animate-gradient-x" 
+              className="h-full bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-mint)] to-[var(--color-primary)] animate-gradient-x relative" 
               style={{ 
                 width: `${percentage}%`,
                 transition: 'width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', // Smooth spring-like transition
-                backgroundSize: '200% 200%'
+                backgroundSize: '200% 200%',
+                boxShadow: '0 0 8px rgba(93, 95, 239, 0.3)'
               }}
-            ></div>
+            >
+              {/* Animated glow effect at the progress point */}
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-2 rounded-full"
+                style={{
+                  background: 'white',
+                  boxShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px var(--color-primary)',
+                  opacity: percentage % 5 === 0 ? 0.7 : 0.3,
+                  transition: 'opacity 0.2s ease-out'
+                }}
+              ></div>
+            </div>
           </div>
         </div>
       </div>

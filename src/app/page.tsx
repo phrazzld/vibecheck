@@ -5,6 +5,7 @@ import ImageUpload from "@/components/ImageUpload";
 import AnalysisButton from "@/components/AnalysisButton";
 import StyleGuideDisplay from "@/components/StyleGuideDisplay";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { Button, ArrowLeftIcon } from "@/components/ui";
 import { AppState } from "@/types";
 import { fileToBase64 } from "@/utils/image";
 
@@ -137,28 +138,14 @@ export default function Home() {
         ) : (
           <div>
             <div className="mb-6">
-              <button
+              <Button
+                variant="tertiary"
                 onClick={() => setState((prev) => ({ ...prev, result: null }))}
-                className="btn-secondary flex items-center gap-2"
-                style={{
-                  borderImage: 'var(--gradient-secondary) 1',
-                  borderImageSlice: '1'
-                }}
+                leftIcon={<ArrowLeftIcon />}
+                className="border border-[var(--color-border)] shadow-sm"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-5 w-5" 
-                  viewBox="0 0 20 20" 
-                  fill="currentColor"
-                >
-                  <path 
-                    fillRule="evenodd" 
-                    d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" 
-                    clipRule="evenodd" 
-                  />
-                </svg>
                 Back to Upload
-              </button>
+              </Button>
             </div>
             
             <section className="section section-result">

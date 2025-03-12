@@ -102,8 +102,8 @@ export default function Home() {
       <main className="max-w-5xl mx-auto">
         {!state.result ? (
           <div className="space-y-12">
-            <section className="card p-8 relative">
-              <h2 className="text-2xl mb-8 text-center text-[#5D5FEF]" style={{ fontFamily: 'var(--font-accent)' }}>
+            <section className="section section-primary">
+              <h2 className="text-2xl mb-8 text-center text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-accent)' }}>
                 Upload an Image
               </h2>
               <ImageUpload 
@@ -113,11 +113,11 @@ export default function Home() {
             </section>
 
             {state.image && (
-              <section className="card p-8 relative flex flex-col items-center">
-                <h2 className="text-2xl mb-6 text-center text-[#5D5FEF]" style={{ fontFamily: 'var(--font-accent)' }}>
+              <section className="section section-secondary flex flex-col items-center">
+                <h2 className="text-2xl mb-6 text-center text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-accent)' }}>
                   Generate Style Guide
                 </h2>
-                <p className="text-center text-[#1A1A2E]/70 dark:text-[#E5E7EB]/70 mb-8 max-w-lg">
+                <p className="text-center text-[var(--color-foreground)]/70 dark:text-[var(--color-foreground)]/70 mb-8 max-w-lg">
                   Our AI will analyze your image and generate a comprehensive style guide including colors, typography, spacing, and design patterns.
                 </p>
                 
@@ -127,44 +127,46 @@ export default function Home() {
                   isLoading={isLoading}
                 />
                 {error && (
-                  <p className="mt-4 text-center text-[#FF2E63]">{error}</p>
+                  <p className="mt-4 text-center text-[var(--color-error)]">{error}</p>
                 )}
               </section>
             )}
           </div>
         ) : (
-          <div className="space-y-8">
-            <button
-              onClick={() => setState((prev) => ({ ...prev, result: null }))}
-              className="btn-secondary flex items-center gap-2"
-              style={{
-                borderImage: 'var(--gradient-secondary) 1',
-                borderImageSlice: '1'
-              }}
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-5 w-5" 
-                viewBox="0 0 20 20" 
-                fill="currentColor"
+          <div>
+            <div className="mb-6">
+              <button
+                onClick={() => setState((prev) => ({ ...prev, result: null }))}
+                className="btn-secondary flex items-center gap-2"
+                style={{
+                  borderImage: 'var(--gradient-secondary) 1',
+                  borderImageSlice: '1'
+                }}
               >
-                <path 
-                  fillRule="evenodd" 
-                  d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" 
-                  clipRule="evenodd" 
-                />
-              </svg>
-              Back to Upload
-            </button>
-            
-            <div className="card p-8 relative">
-              <StyleGuideDisplay markdown={state.result} />
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-5 w-5" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path 
+                    fillRule="evenodd" 
+                    d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" 
+                    clipRule="evenodd" 
+                  />
+                </svg>
+                Back to Upload
+              </button>
             </div>
+            
+            <section className="section section-result">
+              <StyleGuideDisplay markdown={state.result} />
+            </section>
           </div>
         )}
       </main>
 
-      <footer className="mt-16 text-center text-sm text-[#1A1A2E]/50 dark:text-[#E5E7EB]/50">
+      <footer className="mt-16 mb-8 pt-8 text-center text-sm text-[var(--color-foreground)]/50 border-t border-[var(--color-divider)]">
         <p>© 2025 vibecheck • AI-powered design style guide generation</p>
       </footer>
 

@@ -3,17 +3,7 @@ import { downloadMarkdownFile } from "../utils/download";
 import ReactMarkdown from "react-markdown";
 import { Button, CopyIcon, DownloadIcon } from "./ui";
 
-interface StyleGuideDisplayProps {
-  markdown: string;
-}
-
-interface StyleGuideSection {
-  title: string;
-  content: string;
-  id: string;
-  isOpen: boolean;
-}
-
+// Temporarily keep the old ColorSwatches component until we fix the extracted one
 interface ColorSwatch {
   color: string;
   name: string;
@@ -32,6 +22,15 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
     }
   };
   
+  // Process color name to clean up formatting
+  const formatColorName = (name: string) => {
+    return name
+      .replace(/^-\s*/, '') // Remove leading hyphen
+      .replace(/color(s)?/gi, '') // Remove "color" or "colors" (case insensitive)
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+  };
+  
   // Determine if it's a dark color to ensure text contrast
   const isDarkColor = (hexColor: string) => {
     const r = parseInt(hexColor.slice(1, 3), 16);
@@ -47,21 +46,22 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
         const isDark = isDarkColor(swatch.color);
         
         return (
-          <button
+          <div
             key={index}
-            onClick={() => handleCopyColor(swatch.color)}
             className="group relative flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg rounded-lg border border-[var(--color-border)] hover:translate-y-[-2px]"
             style={{ 
               backgroundColor: 'var(--color-card-bg)',
               boxShadow: `0 2px 8px ${swatch.color}15`
             }}
           >
-            {/* Color preview */}
-            <div 
-              className="w-full h-24 flex items-center justify-center"
+            {/* Color preview - clickable */}
+            <button
+              onClick={() => handleCopyColor(swatch.color)}
+              className="w-full h-28 flex items-center justify-center relative cursor-pointer"
               style={{ backgroundColor: swatch.color }}
+              aria-label={`Copy color ${swatch.color}`}
             >
-              {copiedColor === swatch.color && (
+              {copiedColor === swatch.color ? (
                 <div className="bg-white/30 backdrop-blur-sm p-2 rounded-full">
                   <svg 
                     viewBox="0 0 24 24" 
@@ -78,32 +78,36 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
                     />
                   </svg>
                 </div>
+              ) : (
+                <div className="opacity-0 group-hover:opacity-80 transition-opacity">
+                  <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none"
+                    style={{ color: isDark ? '#fff' : '#000' }}
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
               )}
-            </div>
+              
+              {/* Hex code overlay */}
+              <span 
+                className="absolute bottom-2 right-2 px-1.5 py-0.5 text-[10px] font-mono rounded bg-black/20 backdrop-blur-sm transition-opacity opacity-70 group-hover:opacity-90"
+                style={{ color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)' }}
+              >
+                {swatch.color}
+              </span>
+            </button>
             
             {/* Color info */}
             <div className="flex flex-col items-start p-3 bg-[var(--color-card-bg)]">
-              <span className="text-sm font-medium">{swatch.name}</span>
-              <span className={`text-xs font-mono mt-1 ${copiedColor === swatch.color ? 'text-[var(--color-primary)]' : 'text-[var(--color-foreground)]/70'}`}>
-                {swatch.color}
+              <span className="text-sm font-medium w-full">
+                {formatColorName(swatch.name)}
               </span>
-              
-              <div className="mt-2 pt-2 border-t border-[var(--color-border)]/50 w-full flex justify-between items-center">
-                <span className="text-[10px] uppercase tracking-wider text-[var(--color-foreground)]/60">
-                  Click to copy
-                </span>
-                <svg 
-                  width="14" 
-                  height="14" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  className="text-[var(--color-foreground)]/40"
-                  stroke="currentColor" 
-                  strokeWidth="2"
-                >
-                  <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
             </div>
             
             {/* Tooltip */}
@@ -112,11 +116,22 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
                 Copied!
               </span>
             )}
-          </button>
+          </div>
         );
       })}
     </div>
   );
+};
+
+interface StyleGuideDisplayProps {
+  markdown: string;
+}
+
+interface StyleGuideSection {
+  title: string;
+  content: string;
+  id: string;
+  isOpen: boolean;
 }
 
 export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) {
@@ -328,6 +343,11 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     // Remove the header line
     const contentWithoutHeader = content.split('\n').slice(1).join('\n');
     
+    // Skip rendering if there's no content left to display
+    if (!contentWithoutHeader.trim()) {
+      return null;
+    }
+    
     return (
       <ReactMarkdown
         components={{
@@ -446,7 +466,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
                       <div className="mb-4 flex items-center gap-2">
                         <div className="w-1 h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-full"></div>
                         <h4 className="text-lg font-semibold text-[var(--color-foreground)]" style={{ fontFamily: 'var(--font-accent)' }}>
-                          Color Palette
+                          Colors
                         </h4>
                       </div>
                       <div className="overflow-hidden">

@@ -170,26 +170,37 @@ export default function Home() {
       </header>
 
       <main className="max-w-3xl mx-auto flex-1 w-full">
-        {/* API Key Manager (always shown) */}
-        <ApiKeyManager 
-          onApiKeySave={handleApiKeySave}
-          apiKey={state.apiKey}
-          rememberKey={state.rememberKey}
-        />
-
         {!state.result ? (
           <div>
             <section className="flex flex-col">
-              {/* If API key is set, show the image upload component */}
-              {state.apiKey ? (
+              {/* If no API key set yet, show API key form prominently */}
+              {!state.apiKey ? (
+                <ApiKeyManager 
+                  onApiKeySave={handleApiKeySave}
+                  apiKey={state.apiKey}
+                  rememberKey={state.rememberKey}
+                />
+              ) : (
+                /* If API key is set, show the image upload component */
                 <div className="w-full max-w-md mx-auto">
                   <ImageUpload
                     onImageSelect={handleImageSelect}
                     selectedImage={state.image}
                   />
+                  
+                  {/* Show compact API key manager below the upload */}
+                  <div className="mt-4">
+                    <ApiKeyManager 
+                      onApiKeySave={handleApiKeySave}
+                      apiKey={state.apiKey}
+                      rememberKey={state.rememberKey}
+                    />
+                  </div>
                 </div>
-              ) : (
-                /* If no API key, show message */
+              )}
+              
+              {/* Show friendly message if no API key is provided */}
+              {!state.apiKey && (
                 <div className="mt-4 w-full max-w-md mx-auto text-center">
                   <div className="bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 rounded-xl p-4 shadow-lg">
                     <div className="flex items-center justify-center gap-2 text-[var(--color-warning)] mb-2">
@@ -199,7 +210,7 @@ export default function Home() {
                       <span className="font-medium">API Key Required</span>
                     </div>
                     <p className="text-sm text-[var(--color-foreground)]/70">
-                      Please add your OpenAI API key above to use the image analyzer.
+                      Please add your OpenAI API key to use the image analyzer.
                     </p>
                   </div>
                 </div>
@@ -246,7 +257,7 @@ export default function Home() {
           </div>
         ) : (
           <div>
-            <div className="mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
               <Button
                 variant="tertiary"
                 onClick={() => setState((prev) => ({ ...prev, result: null, image: null }))}
@@ -255,6 +266,15 @@ export default function Home() {
               >
                 Analyze New Image
               </Button>
+              
+              {/* Show compact API key manager on result page too */}
+              {state.apiKey && (
+                <ApiKeyManager 
+                  onApiKeySave={handleApiKeySave}
+                  apiKey={state.apiKey}
+                  rememberKey={state.rememberKey}
+                />
+              )}
             </div>
 
             <section className="section section-result">
@@ -264,15 +284,12 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-auto pt-4 text-center border-t border-[var(--color-divider)]">
+      <footer className="mt-auto pt-4 text-center border-t border-[var(--color-divider)]/20">
         <div className="inline-flex items-center gap-4 flex-wrap justify-center">
           <p className="text-sm text-[var(--color-foreground)]/50 mb-0 pb-0">
             © 2025 <span className="font-medium">vibecheck</span> • AI-powered
             aesthetic extraction
           </p>
-          <div className="inline-flex items-center text-xs text-[var(--color-foreground)]/40 gap-2">
-            <span>Powered by your OpenAI API key</span>
-          </div>
           <a
             href="https://github.com/phrazzld/vibecheck"
             target="_blank"

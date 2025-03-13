@@ -108,7 +108,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
     // Reset dropped state after animation completes
     setTimeout(() => {
       setIsDropped(false);
-    }, 600);
+    }, 1000);
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -202,10 +202,10 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   return (
     <div className="w-full h-full">
       <div
-        className={`group dropzone h-full transition-all duration-500 ease-in-out ${
+        className={`group dropzone h-full transform-gpu motion-safe:transition-all motion-safe:duration-700 motion-safe:ease-elastic ${
           isDragging ? "active" : ""
         } ${isDropped ? "dropped" : ""} 
-        hover:shadow-2xl hover:shadow-[var(--color-primary)]/10
+        shadow-lg shadow-transparent hover:shadow-2xl hover:shadow-[var(--color-primary)]/10
         bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-lavender)]/20
         hover:from-[var(--color-lavender)]/5 hover:via-[var(--color-surface)] hover:to-[var(--color-primary)]/5
         border-2 border-dashed border-[var(--color-border)]/40 hover:border-[var(--color-primary)]/30
@@ -223,7 +223,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
         >
           <div className={`upload-icon-container flex items-center justify-center w-24 h-24 mx-auto mb-6 text-[var(--color-primary)] 
             ${isDragging ? "scale-110" : "hover:scale-105"} 
-            transition-all duration-300 ease-in-out
+            transform-gpu motion-safe:transition-all motion-safe:duration-700 motion-safe:ease-elastic
             ${fileHovering ? "animate-bounce-once" : ""}
             bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-primary)]/5
             shadow-lg shadow-[var(--color-primary)]/10 rounded-full p-5
@@ -278,7 +278,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
             )}
           </div>
           
-          <p className="mb-4 text-xl font-medium text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] transition-colors duration-300">
+          <p className="mb-4 text-xl font-medium text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] motion-safe:transition-all motion-safe:duration-700 motion-safe:ease-elastic">
             {fileHovering 
               ? (hoveringFileType && hoveringFileType.startsWith('image/') 
                   ? "Release to upload image..." 

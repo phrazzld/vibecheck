@@ -850,8 +850,21 @@ a:hover {
   }
 }
 
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-float {
+  animation: subtle-float 8s ease-in-out infinite;
+}
+
+.hover-float:hover {
+  animation: subtle-float 2s ease-in-out infinite;
 }
 
 @keyframes pulse {

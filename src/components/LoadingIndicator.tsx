@@ -192,62 +192,100 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
             Our AI is analyzing your image and creating a detailed style guide...
           </p>
           
-          {/* Processing steps with staggered fade-in */}
+          {/* Processing steps with staggered fade-in and dynamic icons */}
           <div className="mt-4 space-y-2">
             <div 
               className="flex items-center text-xs" 
               style={{ 
-                opacity: percentage > 10 ? 1 : 0,
-                transform: percentage > 10 ? 'translateY(0)' : 'translateY(5px)',
+                opacity: percentage > 5 ? 1 : 0,
+                transform: percentage > 5 ? 'translateY(0)' : 'translateY(5px)',
                 transition: 'opacity 0.5s ease, transform 0.5s ease' 
               }}
             >
-              <svg className="w-4 h-4 mr-2 text-[var(--color-success)]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              {percentage <= 10 ? (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-primary)] animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-success)] animate-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
               <span className="text-[var(--color-foreground)]/70">Extracting color palette</span>
             </div>
+            
             <div 
               className="flex items-center text-xs" 
               style={{ 
-                opacity: percentage > 30 ? 1 : 0,
-                transform: percentage > 30 ? 'translateY(0)' : 'translateY(5px)',
+                opacity: percentage > 20 ? 1 : 0,
+                transform: percentage > 20 ? 'translateY(0)' : 'translateY(5px)',
                 transition: 'opacity 0.5s ease, transform 0.5s ease',
                 transitionDelay: '0.1s'
               }}
             >
-              <svg className="w-4 h-4 mr-2 text-[var(--color-success)]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              {percentage <= 30 ? (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-primary)] animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-success)] animate-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
               <span className="text-[var(--color-foreground)]/70">Analyzing typography patterns</span>
             </div>
+            
             <div 
               className="flex items-center text-xs" 
               style={{ 
-                opacity: percentage > 50 ? 1 : 0,
-                transform: percentage > 50 ? 'translateY(0)' : 'translateY(5px)',
+                opacity: percentage > 40 ? 1 : 0,
+                transform: percentage > 40 ? 'translateY(0)' : 'translateY(5px)',
                 transition: 'opacity 0.5s ease, transform 0.5s ease',
                 transitionDelay: '0.2s'
               }}
             >
-              <svg className="w-4 h-4 mr-2 text-[var(--color-success)]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              {percentage <= 50 ? (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-primary)] animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-success)] animate-success" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
               <span className="text-[var(--color-foreground)]/70">Detecting spacing & layout rules</span>
             </div>
+            
             <div 
               className="flex items-center text-xs" 
               style={{ 
-                opacity: percentage > 70 ? 1 : 0,
-                transform: percentage > 70 ? 'translateY(0)' : 'translateY(5px)',
+                opacity: percentage > 60 ? 1 : 0,
+                transform: percentage > 60 ? 'translateY(0)' : 'translateY(5px)',
                 transition: 'opacity 0.5s ease, transform 0.5s ease',
                 transitionDelay: '0.3s'
               }}
             >
-              <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span className="text-[var(--color-foreground)]/70">Generating comprehensive style guide</span>
+              {percentage < 95 ? (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-primary)] animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 mr-2 text-[var(--color-success)] animate-bounce-once" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+              <span className={`${percentage >= 95 ? 'font-medium text-[var(--color-foreground)]' : 'text-[var(--color-foreground)]/70'}`}>
+                Generating comprehensive style guide
+              </span>
+              {percentage >= 95 && (
+                <span className="ml-1 text-[var(--color-success)] font-medium">
+                  Complete!
+                </span>
+              )}
             </div>
           </div>
           

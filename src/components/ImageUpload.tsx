@@ -138,36 +138,39 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   if (selectedImage && preview) {
     return (
       <div className="w-full h-full">
-        <div className={`relative overflow-hidden h-full transition-all duration-300 ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'}`}>
-          <div className="h-full flex flex-col">
-            <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-[var(--color-soft-bg)] to-[var(--color-soft-bg)] p-3">
+        <div className={`relative overflow-hidden h-full transition-all duration-500 ease-in-out ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'}`}>
+          <div className="h-full flex flex-col rounded-xl shadow-lg shadow-[var(--color-primary)]/10 overflow-hidden">
+            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-lavender)]/20 p-5 rounded-t-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={preview} 
                 alt="Uploaded image preview" 
-                className="max-w-full max-h-[180px] object-contain rounded-sm"
+                className="max-w-full max-h-[280px] object-contain rounded-lg"
                 style={{ 
-                  boxShadow: '0 0 0 1px rgba(0,0,0,0.05)',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.09)',
+                  transition: 'all 0.5s ease-in-out',
                 }}
               />
             </div>
           
             {/* Separate Control Bar - Not overlapping the image */}
-            <div className="bg-gradient-to-b from-[var(--color-soft-bg)]/50 to-[var(--color-soft-bg)] border-t border-[var(--color-border)]/30 px-3 py-2 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-surface)]/95 border-t border-[var(--color-border)]/30 px-5 py-3.5 flex justify-between items-center rounded-b-xl shadow-inner">
               <div className="flex items-center text-sm text-[var(--color-foreground)]/80 font-medium">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-4 w-4 mr-1.5 text-[var(--color-primary)]" 
-                  viewBox="0 0 20 20" 
-                  fill="currentColor"
-                >
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                </svg>
+                <div className="p-1.5 rounded-full bg-[var(--color-primary)]/10 mr-2">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-4 w-4 text-[var(--color-primary)]" 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  </svg>
+                </div>
                 <span className="truncate max-w-[100px] md:max-w-[150px]" title={selectedImage.name}>
                   {truncateFilename(selectedImage.name, 18)}
                 </span>
-                <span className="ml-1 text-xs opacity-70">
-                  ({formatFileSize(selectedImage.size)})
+                <span className="ml-1.5 text-xs py-0.5 px-1.5 rounded-full bg-[var(--color-foreground)]/10">
+                  {formatFileSize(selectedImage.size)}
                 </span>
               </div>
               
@@ -175,8 +178,8 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
                 variant="primary"
                 size="sm"
                 onClick={handleChangeImage}
-                leftIcon={<EditIcon className="h-3 w-3 group-hover:rotate-12" />}
-                className="text-xs py-1 px-2.5 font-medium"
+                leftIcon={<EditIcon className="h-3 w-3 group-hover:rotate-12 transition-transform duration-300" />}
+                className="text-xs py-1.5 px-3 font-medium shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Replace
               </Button>
@@ -199,34 +202,43 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   return (
     <div className="w-full h-full">
       <div
-        className={`dropzone h-full transition-all duration-[var(--transition-standard)] ${
+        className={`group dropzone h-full transition-all duration-500 ease-in-out ${
           isDragging ? "active" : ""
-        } ${isDropped ? "dropped" : ""}`}
+        } ${isDropped ? "dropped" : ""} 
+        hover:shadow-2xl hover:shadow-[var(--color-primary)]/10
+        bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-lavender)]/20
+        hover:from-[var(--color-lavender)]/5 hover:via-[var(--color-surface)] hover:to-[var(--color-primary)]/5
+        border-2 border-dashed border-[var(--color-border)]/40 hover:border-[var(--color-primary)]/30
+        rounded-xl backdrop-blur-sm`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        style={{ minHeight: "180px" }}
+        style={{ minHeight: "300px" }}
       >
         <div 
-          className={`relative z-10 py-5 px-4 text-center cursor-pointer transition-all duration-300 h-full flex flex-col justify-center ${
+          className={`relative z-10 py-8 px-6 text-center cursor-pointer transition-all duration-500 ease-in-out h-full flex flex-col justify-center items-center ${
             fileHovering ? "scale-105" : ""
           }`}
         >
-          <div className={`upload-icon-container flex items-center justify-center w-14 h-14 mx-auto mb-3 text-[var(--color-primary)] 
+          <div className={`upload-icon-container flex items-center justify-center w-24 h-24 mx-auto mb-6 text-[var(--color-primary)] 
             ${isDragging ? "scale-110" : "hover:scale-105"} 
-            transition-all duration-300
+            transition-all duration-300 ease-in-out
             ${fileHovering ? "animate-bounce-once" : ""}
+            bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-primary)]/5
+            shadow-lg shadow-[var(--color-primary)]/10 rounded-full p-5
+            group-hover:shadow-xl group-hover:shadow-[var(--color-primary)]/20
+            group-hover:bg-gradient-to-br group-hover:from-[var(--color-surface)] group-hover:to-[var(--color-primary)]/10
           `}>
             {fileHovering && hoveringFileType && hoveringFileType.startsWith('image/') ? (
               // Show a specialized icon when an image file is being dragged
               <div className="relative">
                 <svg 
-                  className="w-9 h-9 absolute inset-0 animate-pulse"
+                  className="w-14 h-14 absolute inset-0 animate-pulse"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -235,11 +247,11 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
                 <svg 
-                  className="w-9 h-9 opacity-30"
+                  className="w-14 h-14 opacity-30"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -249,13 +261,13 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
                 </svg>
               </div>
             ) : (
-              // Default upload icon
+              // Default upload icon with slight glow effect
               <svg 
-                className="w-9 h-9"
+                className="w-14 h-14 drop-shadow-md group-hover:drop-shadow-xl"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -266,21 +278,17 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
             )}
           </div>
           
-          <p className="mb-2 text-base font-semibold text-[var(--color-foreground)]">
+          <p className="mb-4 text-xl font-medium text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] transition-colors duration-300">
             {fileHovering 
               ? (hoveringFileType && hoveringFileType.startsWith('image/') 
                   ? "Release to upload image..." 
                   : "Drop your file here...") 
-              : "Drag & drop or click to select"}
-          </p>
-          
-          <p className="text-xs text-[var(--color-foreground)]/60">
-            Max size: 10MB
+              : "Drop image or click to upload"}
           </p>
           
           {fileHovering && hoveringFileType && (
             <div className="mt-2 animate-fade-in">
-              <div className={`file-type-indicator hovering inline-flex items-center gap-2 mt-1 mx-auto`}>
+              <div className="file-type-indicator hovering inline-flex items-center gap-2 mt-1 mx-auto px-3 py-1.5 rounded-full bg-[var(--color-primary)]/10 shadow-inner">
                 {hoveringFileType.startsWith('image/') ? (
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -318,28 +326,41 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
       </div>
       
       {error && (
-        <div className={`mt-3 p-2 text-sm text-center rounded-md shadow-sm transition-all duration-200 
+        <div className={`mt-5 p-3 text-sm text-center rounded-xl shadow-md backdrop-blur-sm transition-all duration-300
           ${errorType === "format" 
-            ? "text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 animate-error" 
-            : "text-[var(--color-warning)] bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 animate-pulse"
+            ? "text-[var(--color-error)] bg-gradient-to-r from-[var(--color-error)]/20 to-[var(--color-error)]/5 border border-[var(--color-error)]/30 animate-error" 
+            : "text-[var(--color-warning)] bg-gradient-to-r from-[var(--color-warning)]/20 to-[var(--color-warning)]/5 border border-[var(--color-warning)]/30 animate-pulse"
           }
-          hover:shadow-md hover:border-opacity-50 
+          hover:shadow-lg hover:border-opacity-60 transform hover:scale-[1.02]
         `}>
           <div className="flex items-center justify-center gap-2">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-4 w-4" 
-              viewBox="0 0 20 20" 
-              fill="currentColor"
-            >
-              {errorType === "format" ? (
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              ) : (
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              )}
-            </svg>
-            <p>{error}</p>
+            <div className={`p-1.5 rounded-full ${errorType === "format" ? "bg-[var(--color-error)]/20" : "bg-[var(--color-warning)]/20"}`}>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-4 w-4" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                {errorType === "format" ? (
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                ) : (
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                )}
+              </svg>
+            </div>
+            <p className="font-medium">{error}</p>
           </div>
+          
+          <button 
+            onClick={() => setError(null)}
+            className={`mt-2 text-xs px-3 py-1 rounded-full ${
+              errorType === "format" 
+                ? "text-[var(--color-error)]/80 hover:text-[var(--color-error)] bg-[var(--color-error)]/10 hover:bg-[var(--color-error)]/20" 
+                : "text-[var(--color-warning)]/80 hover:text-[var(--color-warning)] bg-[var(--color-warning)]/10 hover:bg-[var(--color-warning)]/20"
+            } transition-all duration-300`}
+          >
+            Dismiss
+          </button>
         </div>
       )}
     </div>

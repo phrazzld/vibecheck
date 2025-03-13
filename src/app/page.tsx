@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ImageUpload from "@/components/ImageUpload";
-import AnalysisButton from "@/components/AnalysisButton";
 import StyleGuideDisplay from "@/components/StyleGuideDisplay";
-import LoadingIndicator from "@/components/LoadingIndicator";
 import { Button, ArrowLeftIcon } from "@/components/ui";
 import { AppState } from "@/types";
 import { fileToBase64 } from "@/utils/image";
@@ -27,15 +25,14 @@ export default function Home() {
     setError(null);
   }, []);
 
-  const handleAnalyze = useCallback(async () => {
-    if (!state.image) return;
-
+  // Define the analyze function separately to avoid circular dependencies
+  const analyzeImage = useCallback(async (imageFile: File) => {
     try {
       setIsLoading(true);
       setError(null);
 
       // Convert image to base64
-      const base64Image = await fileToBase64(state.image);
+      const base64Image = await fileToBase64(imageFile);
 
       // Call API
       const response = await fetch("/api/analyze", {
@@ -69,7 +66,27 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [state.image, setIsLoading, setError, setState]);
+  }, [setIsLoading, setError, setState]);
+
+  // Auto-trigger analysis when a valid image is uploaded
+  useEffect(() => {
+    if (state.image) {
+      // Small delay for better UX
+      const timer = setTimeout(() => {
+        // Type assertion since we've already checked that state.image is not null
+        analyzeImage(state.image as File);
+      }, 800); // Slight delay to allow the image preview to render
+      
+      return () => clearTimeout(timer);
+    }
+  }, [state.image, analyzeImage]);
+
+  // Helper for the manual button click
+  const handleAnalyze = useCallback(() => {
+    if (state.image) {
+      analyzeImage(state.image as File);
+    }
+  }, [state.image, analyzeImage]);
 
   return (
     <div className="min-h-screen flex flex-col p-6 md:p-8 pb-16">
@@ -102,93 +119,66 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto flex-1 w-full">
+      <main className="max-w-3xl mx-auto flex-1 w-full">
         {!state.result ? (
           <div>
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start h-full">
-              {/* Left Side: Image Upload */}
-              <section className="flex flex-col h-full">
-                <h2 className="mb-4 text-center text-[var(--color-primary)]">
-                  Upload Image
-                </h2>
-                <div className="bg-[var(--color-soft-bg)] rounded-[var(--radius-lg)] p-5 shadow-[var(--shadow-sm)] h-full flex flex-col justify-between" style={{ height: "100%" }}>
-                  <div className="mb-4">
-                    <p className="text-[var(--color-foreground)]/70 mb-4"
-                      style={{ lineHeight: "var(--leading-relaxed)" }}>
-                      Upload an image to extract its design aesthetic. 
-                      Supported formats: JPEG, PNG, WEBP, or GIF.
-                    </p>
+            <section className="flex flex-col">
+              <div className="w-full max-w-md mx-auto">
+                <ImageUpload
+                  onImageSelect={handleImageSelect}
+                  selectedImage={state.image}
+                />
+              </div>
+              
+              {isLoading && (
+                <div className="mt-8 text-center">
+                  <div className="inline-block p-4 rounded-full bg-gradient-to-br from-[var(--color-primary)]/15 via-[var(--color-accent-2)]/10 to-[var(--color-lavender)]/15 shadow-lg shadow-[var(--color-primary)]/5 backdrop-blur-sm">
+                    <svg className="animate-spin h-10 w-10 text-[var(--color-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                   </div>
-                  
-                  <div className="flex-1 flex items-center justify-center">
-                    <ImageUpload
-                      onImageSelect={handleImageSelect}
-                      selectedImage={state.image}
-                    />
+                  <p className="mt-4 text-xl text-[var(--color-foreground)]/90 font-medium">
+                    Analyzing your image...
+                  </p>
+                  <p className="text-base text-[var(--color-foreground)]/60 mt-2 max-w-sm mx-auto">
+                    Extracting colors, typography, and design patterns
+                  </p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="mt-8 text-center">
+                  <div className="p-4 inline-block text-center text-[var(--color-error)] bg-gradient-to-r from-[var(--color-error)]/20 to-[var(--color-error)]/5 rounded-xl border border-[var(--color-error)]/30 backdrop-blur-sm shadow-md">
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                      <div className="p-2 rounded-full bg-[var(--color-error)]/15">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="font-medium text-lg">{error}</span>
+                    </div>
+                    <button 
+                      onClick={() => setError(null)}
+                      className="mt-2 text-sm px-4 py-1.5 rounded-full bg-[var(--color-error)]/10 hover:bg-[var(--color-error)]/20 text-[var(--color-error)]/90 hover:text-[var(--color-error)] transition-all duration-300 shadow-sm hover:shadow"
+                    >
+                      Dismiss
+                    </button>
                   </div>
                 </div>
-              </section>
-
-              {/* Right Side: Analysis Controls */}
-              <section className={`flex flex-col h-full ${!state.image ? 'opacity-70' : 'opacity-100'} transition-opacity duration-300`}>
-                <h2 className="mb-4 text-center text-[var(--color-primary)]">
-                  Extract Aesthetic
-                </h2>
-                <div className="bg-[var(--color-soft-bg)] rounded-[var(--radius-lg)] p-5 shadow-[var(--shadow-sm)] h-full flex flex-col justify-between" style={{ height: "100%" }}>
-                  <div>
-                    <p className="text-[var(--color-foreground)]/70 mb-4"
-                      style={{ lineHeight: "var(--leading-relaxed)" }}>
-                      Our AI will analyze your image and create a detailed style
-                      guide with colors, typography, spacing, and design patterns.
-                    </p>
-                    <ul className="space-y-2 mb-6">
-                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
-                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Extract color palette
-                      </li>
-                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
-                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Identify typography styles
-                      </li>
-                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
-                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Analyze spacing & layout
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div className="mt-auto">
-                    <AnalysisButton
-                      onClick={handleAnalyze}
-                      disabled={!state.image}
-                      isLoading={isLoading}
-                    />
-                    {error && (
-                      <p className="mt-4 text-center text-[var(--color-error)]">
-                        {error}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </section>
-            </div>
+              )}
+            </section>
           </div>
         ) : (
           <div>
             <div className="mb-6">
               <Button
                 variant="tertiary"
-                onClick={() => setState((prev) => ({ ...prev, result: null }))}
+                onClick={() => setState((prev) => ({ ...prev, result: null, image: null }))}
                 leftIcon={<ArrowLeftIcon />}
                 className="border border-[var(--color-border)] shadow-sm"
               >
-                Back to Upload
+                Analyze New Image
               </Button>
             </div>
 
@@ -225,8 +215,6 @@ export default function Home() {
           </a>
         </div>
       </footer>
-
-      <LoadingIndicator isLoading={isLoading} />
     </div>
   );
 }

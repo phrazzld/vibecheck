@@ -52,7 +52,7 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
             onClick={() => handleCopyColor(swatch.color)}
             className="group relative flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg rounded-lg border border-[var(--color-border)] hover:translate-y-[-2px]"
             style={{ 
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--color-card-bg)',
               boxShadow: `0 2px 8px ${swatch.color}15`
             }}
           >
@@ -82,13 +82,13 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
             </div>
             
             {/* Color info */}
-            <div className="flex flex-col items-start p-3 bg-white">
+            <div className="flex flex-col items-start p-3 bg-[var(--color-card-bg)]">
               <span className="text-sm font-medium">{swatch.name}</span>
               <span className={`text-xs font-mono mt-1 ${copiedColor === swatch.color ? 'text-[var(--color-primary)]' : 'text-[var(--color-foreground)]/70'}`}>
                 {swatch.color}
               </span>
               
-              <div className="mt-2 pt-2 border-t w-full flex justify-between items-center">
+              <div className="mt-2 pt-2 border-t border-[var(--color-border)]/50 w-full flex justify-between items-center">
                 <span className="text-[10px] uppercase tracking-wider text-[var(--color-foreground)]/60">
                   Click to copy
                 </span>
@@ -310,7 +310,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
         </pre>
         <button 
           onClick={handleCopyCode}
-          className="absolute top-2 right-2 bg-white/90 hover:bg-white rounded-md p-1 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-primary)]"
+          className="absolute top-2 right-2 bg-[var(--color-card-bg)]/90 hover:bg-[var(--color-card-bg)] rounded-md p-1 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-primary)]"
           aria-label="Copy code"
         >
           {codeCopied ? (
@@ -400,7 +400,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
                 className={`text-xs px-3 py-1.5 rounded-full transition-all ${
                   activeSection === section.id
                     ? 'bg-[var(--color-primary)] text-white font-medium shadow-sm'
-                    : 'bg-white hover:bg-[var(--color-primary-light)/10] text-[var(--color-foreground)] border border-[var(--color-border)]'
+                    : 'bg-[var(--color-card-bg)] hover:bg-[var(--color-primary-light)/10] text-[var(--color-foreground)] border border-[var(--color-border)]'
                 }`}
               >
                 {section.title}
@@ -417,7 +417,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
             key={section.id}
             ref={el => handleSectionRef(section.id, el)}
             className={`
-              bg-white rounded-lg shadow-sm border border-[var(--color-border)] 
+              bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)] 
               overflow-hidden transition-all duration-300
               ${section.isOpen ? 'opacity-100 shadow-md' : 'opacity-80'}
             `}
@@ -442,7 +442,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
                 {/* Special handling for color sections */}
                 {colorSwatches[section.id] && colorSwatches[section.id].length > 0 ? (
                   <div className="pt-6 pb-2 px-6">
-                    <div className="mb-8 bg-white p-6 rounded-xl shadow-md border border-[var(--color-border)]">
+                    <div className="mb-8 bg-[var(--color-card-bg)] p-6 rounded-xl shadow-md border border-[var(--color-border)]">
                       <div className="mb-4 flex items-center gap-2">
                         <div className="w-1 h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-full"></div>
                         <h4 className="text-lg font-semibold text-[var(--color-foreground)]" style={{ fontFamily: 'var(--font-accent)' }}>
@@ -485,7 +485,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
         sticky bottom-4 flex justify-center transition-all duration-300
         ${scrollPosition > 300 ? 'opacity-90 hover:opacity-100' : 'opacity-0 pointer-events-none'}
       `}>
-        <div className="bg-[var(--color-card-bg)] shadow-lg rounded-full py-2 px-4 flex gap-3 border border-[var(--color-border)]">
+        <div className="bg-[var(--color-card-bg)] shadow-lg rounded-full py-2 px-4 flex gap-3 border border-[var(--color-border)] backdrop-blur-sm">
           <Button
             variant="tertiary"
             size="sm"

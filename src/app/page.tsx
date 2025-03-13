@@ -3,17 +3,66 @@
 import { useState, useCallback, useEffect } from "react";
 import ImageUpload from "@/components/ImageUpload";
 import StyleGuideDisplay from "@/components/StyleGuideDisplay";
+import ApiKeyManager from "@/components/ApiKeyManager";
 import { Button, ArrowLeftIcon } from "@/components/ui";
-import { AppState } from "@/types";
+import { AppState, ApiKeyData } from "@/types";
 import { fileToBase64 } from "@/utils/image";
 
+// Local storage key
+const API_KEY_STORAGE_KEY = 'vibecheck_api_key_data';
+
 export default function Home() {
-  const [state, setState] = useState<AppState>({
-    image: null,
-    result: null,
+  // Initialize state with stored API key if available
+  const [state, setState] = useState<AppState>(() => {
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      try {
+        const savedData = localStorage.getItem(API_KEY_STORAGE_KEY);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData) as ApiKeyData;
+          // Only use the saved key if the user opted to remember it
+          if (parsedData.remember) {
+            return {
+              image: null,
+              result: null,
+              apiKey: parsedData.key,
+              rememberKey: parsedData.remember
+            };
+          }
+        }
+      } catch (e) {
+        // Silent fail - if there's an error reading localStorage, just use default state
+        console.error('Error reading from localStorage', e);
+      }
+    }
+    
+    // Default state
+    return {
+      image: null,
+      result: null,
+      apiKey: '',
+      rememberKey: false
+    };
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleApiKeySave = useCallback((data: ApiKeyData) => {
+    setState(prev => ({
+      ...prev,
+      apiKey: data.key,
+      rememberKey: data.remember
+    }));
+    
+    // Save to localStorage if remember is true
+    if (data.remember) {
+      localStorage.setItem(API_KEY_STORAGE_KEY, JSON.stringify(data));
+    } else {
+      // If not remembering, clear any previously saved key
+      localStorage.removeItem(API_KEY_STORAGE_KEY);
+    }
+  }, []);
 
   const handleImageSelect = useCallback((file: File) => {
     setState((prev) => ({
@@ -27,6 +76,13 @@ export default function Home() {
 
   // Define the analyze function separately to avoid circular dependencies
   const analyzeImage = useCallback(async (imageFile: File) => {
+    // Check for API key before proceeding
+    if (!state.apiKey.trim()) {
+      setError("OpenAI API key is required to analyze images");
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       setError(null);
@@ -34,7 +90,7 @@ export default function Home() {
       // Convert image to base64
       const base64Image = await fileToBase64(imageFile);
 
-      // Call API
+      // Call API with user's API key
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: {
@@ -42,6 +98,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           image: base64Image,
+          apiKey: state.apiKey
         }),
       });
 
@@ -66,11 +123,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setError, setState]);
+  }, [state.apiKey, setIsLoading, setError, setState]);
 
   // Auto-trigger analysis when a valid image is uploaded
   useEffect(() => {
-    if (state.image) {
+    if (state.image && state.apiKey) {
       // Small delay for better UX
       const timer = setTimeout(() => {
         // Type assertion since we've already checked that state.image is not null
@@ -79,7 +136,7 @@ export default function Home() {
       
       return () => clearTimeout(timer);
     }
-  }, [state.image, analyzeImage]);
+  }, [state.image, state.apiKey, analyzeImage]);
 
   return (
     <div className="min-h-screen flex flex-col p-6 md:p-8 pb-16">
@@ -113,15 +170,40 @@ export default function Home() {
       </header>
 
       <main className="max-w-3xl mx-auto flex-1 w-full">
+        {/* API Key Manager (always shown) */}
+        <ApiKeyManager 
+          onApiKeySave={handleApiKeySave}
+          apiKey={state.apiKey}
+          rememberKey={state.rememberKey}
+        />
+
         {!state.result ? (
           <div>
             <section className="flex flex-col">
-              <div className="w-full max-w-md mx-auto">
-                <ImageUpload
-                  onImageSelect={handleImageSelect}
-                  selectedImage={state.image}
-                />
-              </div>
+              {/* If API key is set, show the image upload component */}
+              {state.apiKey ? (
+                <div className="w-full max-w-md mx-auto">
+                  <ImageUpload
+                    onImageSelect={handleImageSelect}
+                    selectedImage={state.image}
+                  />
+                </div>
+              ) : (
+                /* If no API key, show message */
+                <div className="mt-4 w-full max-w-md mx-auto text-center">
+                  <div className="bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 rounded-xl p-4 shadow-lg">
+                    <div className="flex items-center justify-center gap-2 text-[var(--color-warning)] mb-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">API Key Required</span>
+                    </div>
+                    <p className="text-sm text-[var(--color-foreground)]/70">
+                      Please add your OpenAI API key above to use the image analyzer.
+                    </p>
+                  </div>
+                </div>
+              )}
               
               {isLoading && (
                 <div className="mt-8 text-center">
@@ -188,6 +270,9 @@ export default function Home() {
             © 2025 <span className="font-medium">vibecheck</span> • AI-powered
             aesthetic extraction
           </p>
+          <div className="inline-flex items-center text-xs text-[var(--color-foreground)]/40 gap-2">
+            <span>Powered by your OpenAI API key</span>
+          </div>
           <a
             href="https://github.com/phrazzld/vibecheck"
             target="_blank"

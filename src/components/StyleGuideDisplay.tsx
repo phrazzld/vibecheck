@@ -32,26 +32,89 @@ const ColorSwatchesDisplay = ({ colors }: { colors: ColorSwatch[] }) => {
     }
   };
   
+  // Determine if it's a dark color to ensure text contrast
+  const isDarkColor = (hexColor: string) => {
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance < 0.6;
+  };
+  
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 my-4">
-      {colors.map((swatch, index) => (
-        <button
-          key={index}
-          onClick={() => handleCopyColor(swatch.color)}
-          className="flex flex-col items-center text-center rounded-lg overflow-hidden border border-[var(--color-border)] shadow-sm hover:shadow-md transition-shadow bg-white"
-        >
-          <div 
-            className="w-full h-14 rounded-t-lg" 
-            style={{ backgroundColor: swatch.color }}
-          />
-          <div className="p-2 w-full">
-            <div className="font-medium text-xs text-[var(--color-foreground)]">{swatch.name}</div>
-            <div className={`text-xs font-mono transition-all ${copiedColor === swatch.color ? 'text-[var(--color-accent-1)]' : 'text-[var(--color-foreground-light)]'}`}>
-              {copiedColor === swatch.color ? 'Copied!' : swatch.color}
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 my-6">
+      {colors.map((swatch, index) => {
+        const isDark = isDarkColor(swatch.color);
+        
+        return (
+          <button
+            key={index}
+            onClick={() => handleCopyColor(swatch.color)}
+            className="group relative flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg rounded-lg border border-[var(--color-border)] hover:translate-y-[-2px]"
+            style={{ 
+              backgroundColor: '#fff',
+              boxShadow: `0 2px 8px ${swatch.color}15`
+            }}
+          >
+            {/* Color preview */}
+            <div 
+              className="w-full h-24 flex items-center justify-center"
+              style={{ backgroundColor: swatch.color }}
+            >
+              {copiedColor === swatch.color && (
+                <div className="bg-white/30 backdrop-blur-sm p-2 rounded-full">
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    className="w-6 h-6"
+                    style={{ color: isDark ? '#fff' : '#000' }}
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    <path 
+                      d="M5 13l4 4L19 7" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
-          </div>
-        </button>
-      ))}
+            
+            {/* Color info */}
+            <div className="flex flex-col items-start p-3 bg-white">
+              <span className="text-sm font-medium">{swatch.name}</span>
+              <span className={`text-xs font-mono mt-1 ${copiedColor === swatch.color ? 'text-[var(--color-primary)]' : 'text-[var(--color-foreground)]/70'}`}>
+                {swatch.color}
+              </span>
+              
+              <div className="mt-2 pt-2 border-t w-full flex justify-between items-center">
+                <span className="text-[10px] uppercase tracking-wider text-[var(--color-foreground)]/60">
+                  Click to copy
+                </span>
+                <svg 
+                  width="14" 
+                  height="14" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  className="text-[var(--color-foreground)]/40"
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
+                  <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            
+            {/* Tooltip */}
+            {copiedColor === swatch.color && (
+              <span className="absolute top-2 right-2 px-2 py-1 text-[10px] bg-[var(--color-primary)] text-white rounded-md opacity-90">
+                Copied!
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -85,6 +148,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     const parsedSections: StyleGuideSection[] = [];
     let currentSection: StyleGuideSection | null = null;
     const colors: Record<string, ColorSwatch[]> = {};
+    let colorPaletteSection: StyleGuideSection | null = null;
     
     lines.forEach(line => {
       // Create new section
@@ -103,8 +167,9 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
           isOpen: true // All open by default
         };
         
-        // Initialize colors array for this section
+        // Identify color palette section
         if (title.includes('Color')) {
+          colorPaletteSection = currentSection;
           colors[id] = [];
         }
       } 
@@ -136,7 +201,19 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
       parsedSections.push(currentSection);
     }
     
-    setSections(parsedSections);
+    // Reorganize sections to prioritize color palette
+    const reorderedSections = [...parsedSections];
+    if (colorPaletteSection) {
+      // Remove color palette from its current position
+      const colorIndex = reorderedSections.findIndex(s => s.id === colorPaletteSection?.id);
+      if (colorIndex !== -1) {
+        const [colorSection] = reorderedSections.splice(colorIndex, 1);
+        // Add it to the beginning
+        reorderedSections.unshift(colorSection);
+      }
+    }
+    
+    setSections(reorderedSections);
     setColorSwatches(colors);
   }, [markdown]);
 
@@ -355,24 +432,34 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
             </button>
             
             {section.isOpen && (
-              <div className={`style-guide-section relative ${section.isOpen ? '' : 'collapsed'}`}>
-                <div className="px-6 py-4">
-                  {/* Special handling for color sections */}
-                  {colorSwatches[section.id] && colorSwatches[section.id].length > 0 && (
-                    <div className="mb-4">
-                      <ColorSwatchesDisplay colors={colorSwatches[section.id]} />
+              <div className={`style-guide-section ${section.isOpen ? '' : 'collapsed'}`}>
+                {/* Special handling for color sections */}
+                {colorSwatches[section.id] && colorSwatches[section.id].length > 0 ? (
+                  <div className="pt-6 pb-2 px-6">
+                    <div className="mb-8 bg-white p-6 rounded-xl shadow-md border border-[var(--color-border)]">
+                      <div className="mb-4 flex items-center gap-2">
+                        <div className="w-1 h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-full"></div>
+                        <h4 className="text-lg font-semibold text-[var(--color-foreground)]" style={{ fontFamily: 'var(--font-accent)' }}>
+                          Color Palette
+                        </h4>
+                      </div>
+                      <div className="overflow-hidden">
+                        <ColorSwatchesDisplay colors={colorSwatches[section.id]} />
+                      </div>
                     </div>
-                  )}
-                  
-                  {/* Regular markdown content */}
-                  <div className="prose prose-sm sm:prose max-w-none">
-                    {renderMarkdown(section.content)}
+                    
+                    {/* Remaining markdown content */}
+                    <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
+                      {renderMarkdown(section.content)}
+                    </div>
                   </div>
-                </div>
-                
-                {/* Only show the gradient fade for larger content */}
-                {section.content.length > 1000 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                ) : (
+                  <div className="px-6 py-5">
+                    {/* Regular markdown content */}
+                    <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
+                      {renderMarkdown(section.content)}
+                    </div>
+                  </div>
                 )}
               </div>
             )}

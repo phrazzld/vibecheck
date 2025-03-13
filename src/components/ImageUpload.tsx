@@ -137,50 +137,50 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   // Show image preview if we have a selected image
   if (selectedImage && preview) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className={`relative overflow-hidden rounded-[var(--radius-lg)] transition-all duration-300 ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'}`}>
-          <div className="bg-[var(--color-card-bg)] overflow-hidden rounded-t-[var(--radius-lg)] shadow-[var(--shadow-md)] transition-all duration-300 hover:shadow-[var(--shadow-lg)]">
-            <div className="flex items-center justify-center bg-gradient-to-b from-[var(--color-soft-bg)] to-[var(--color-soft-bg)] p-4">
+      <div className="w-full h-full">
+        <div className={`relative overflow-hidden h-full transition-all duration-300 ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'}`}>
+          <div className="h-full flex flex-col">
+            <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-[var(--color-soft-bg)] to-[var(--color-soft-bg)] p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={preview} 
                 alt="Uploaded image preview" 
-                className="max-w-full max-h-[300px] object-contain rounded-sm"
+                className="max-w-full max-h-[180px] object-contain rounded-sm"
                 style={{ 
                   boxShadow: '0 0 0 1px rgba(0,0,0,0.05)',
                 }}
               />
             </div>
-          </div>
           
-          {/* Separate Control Bar - Not overlapping the image */}
-          <div className="bg-[var(--color-soft-bg)] border-t border-[var(--color-border)] rounded-b-[var(--radius-lg)] px-4 py-3 flex justify-between items-center shadow-[var(--shadow-md)]">
-            <div className="flex items-center text-sm text-[var(--color-foreground)]/80 font-medium">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-4 w-4 mr-2 text-[var(--color-primary)]" 
-                viewBox="0 0 20 20" 
-                fill="currentColor"
+            {/* Separate Control Bar - Not overlapping the image */}
+            <div className="bg-gradient-to-b from-[var(--color-soft-bg)]/50 to-[var(--color-soft-bg)] border-t border-[var(--color-border)]/30 px-3 py-2 flex justify-between items-center">
+              <div className="flex items-center text-sm text-[var(--color-foreground)]/80 font-medium">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-4 w-4 mr-1.5 text-[var(--color-primary)]" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
+                <span className="truncate max-w-[100px] md:max-w-[150px]" title={selectedImage.name}>
+                  {truncateFilename(selectedImage.name, 18)}
+                </span>
+                <span className="ml-1 text-xs opacity-70">
+                  ({formatFileSize(selectedImage.size)})
+                </span>
+              </div>
+              
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleChangeImage}
+                leftIcon={<EditIcon className="h-3 w-3 group-hover:rotate-12" />}
+                className="text-xs py-1 px-2.5 font-medium"
               >
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-              </svg>
-              <span className="truncate max-w-[180px]" title={selectedImage.name}>
-                {truncateFilename(selectedImage.name, 24)}
-              </span>
-              <span className="ml-1 text-xs opacity-70">
-                ({formatFileSize(selectedImage.size)})
-              </span>
+                Replace
+              </Button>
             </div>
-            
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleChangeImage}
-              leftIcon={<EditIcon className="h-3.5 w-3.5 group-hover:rotate-12" />}
-              className="text-xs py-1.5 px-3 font-medium"
-            >
-              Replace
-            </Button>
           </div>
         </div>
         
@@ -197,22 +197,23 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
 
   // Show upload form if no image is selected
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full h-full">
       <div
-        className={`dropzone transition-all duration-[var(--transition-standard)] ${
+        className={`dropzone h-full transition-all duration-[var(--transition-standard)] ${
           isDragging ? "active" : ""
         } ${isDropped ? "dropped" : ""}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
+        style={{ minHeight: "180px" }}
       >
         <div 
-          className={`relative z-10 p-8 text-center cursor-pointer transition-all duration-300 ${
+          className={`relative z-10 py-5 px-4 text-center cursor-pointer transition-all duration-300 h-full flex flex-col justify-center ${
             fileHovering ? "scale-105" : ""
           }`}
         >
-          <div className={`upload-icon-container flex items-center justify-center w-20 h-20 mx-auto mb-6 text-[var(--color-primary)] 
+          <div className={`upload-icon-container flex items-center justify-center w-14 h-14 mx-auto mb-3 text-[var(--color-primary)] 
             ${isDragging ? "scale-110" : "hover:scale-105"} 
             transition-all duration-300
             ${fileHovering ? "animate-bounce-once" : ""}
@@ -221,7 +222,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
               // Show a specialized icon when an image file is being dragged
               <div className="relative">
                 <svg 
-                  className="w-12 h-12 absolute inset-0 animate-pulse"
+                  className="w-9 h-9 absolute inset-0 animate-pulse"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -234,7 +235,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
                 <svg 
-                  className="w-12 h-12 opacity-30"
+                  className="w-9 h-9 opacity-30"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -250,7 +251,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
             ) : (
               // Default upload icon
               <svg 
-                className="w-12 h-12"
+                className="w-9 h-9"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -265,21 +266,21 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
             )}
           </div>
           
-          <p className="mb-3 text-base font-semibold text-[var(--color-foreground)]">
+          <p className="mb-2 text-base font-semibold text-[var(--color-foreground)]">
             {fileHovering 
               ? (hoveringFileType && hoveringFileType.startsWith('image/') 
                   ? "Release to upload image..." 
                   : "Drop your file here...") 
-              : "Drag and drop an image here, or click to select"}
+              : "Drag & drop or click to select"}
           </p>
           
-          <p className="text-sm text-[var(--color-foreground)]/60">
-            JPEG, PNG, WEBP, or GIF (max 10MB)
+          <p className="text-xs text-[var(--color-foreground)]/60">
+            Max size: 10MB
           </p>
           
           {fileHovering && hoveringFileType && (
-            <div className="mt-4 animate-fade-in">
-              <div className={`file-type-indicator hovering inline-flex items-center gap-2 mt-4 mx-auto`}>
+            <div className="mt-2 animate-fade-in">
+              <div className={`file-type-indicator hovering inline-flex items-center gap-2 mt-1 mx-auto`}>
                 {hoveringFileType.startsWith('image/') ? (
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -317,7 +318,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
       </div>
       
       {error && (
-        <div className={`mt-4 p-3 text-sm text-center rounded-md shadow-sm transition-all duration-200 
+        <div className={`mt-3 p-2 text-sm text-center rounded-md shadow-sm transition-all duration-200 
           ${errorType === "format" 
             ? "text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 animate-error" 
             : "text-[var(--color-warning)] bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 animate-pulse"
@@ -327,7 +328,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
           <div className="flex items-center justify-center gap-2">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-5 w-5" 
+              className="h-4 w-4" 
               viewBox="0 0 20 20" 
               fill="currentColor"
             >

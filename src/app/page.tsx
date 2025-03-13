@@ -72,13 +72,13 @@ export default function Home() {
   }, [state.image, setIsLoading, setError, setState]);
 
   return (
-    <div className="min-h-screen p-6 md:p-8 pb-20">
-      <header className="flex flex-col items-center mb-16 md:mb-24">
+    <div className="min-h-screen flex flex-col p-6 md:p-8 pb-16">
+      <header className="flex flex-col items-center mb-8 md:mb-10">
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-accent-2)] to-[var(--color-mint)] opacity-15 blur-xl rounded-full"></div>
           <div className="flex items-center">
             <h1
-              className="text-5xl sm:text-5xl"
+              className="text-4xl sm:text-5xl"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 800,
@@ -95,55 +95,89 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-8 max-w-lg text-center">
-          <p className="text-lg text-semibold" style={{ fontWeight: 500 }}>
+        <div className="mt-4 max-w-lg text-center">
+          <p className="text-base text-semibold" style={{ fontWeight: 500 }}>
             Transform images into detailed design aesthetic profiles.
-          </p>
-          <p className="mt-2 text-[var(--color-foreground)]/70 text-base">
-            Upload an image and get a complete breakdown of its colors,
-            typography, and design elements.
           </p>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto">
+      <main className="max-w-5xl mx-auto flex-1 w-full">
         {!state.result ? (
-          <div className="space-y-12">
-            <section className="section section-primary">
-              <h2 className="mb-8 text-center text-[var(--color-primary)]">
-                Upload Image
-              </h2>
-              <ImageUpload
-                onImageSelect={handleImageSelect}
-                selectedImage={state.image}
-              />
-            </section>
+          <div>
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start h-full">
+              {/* Left Side: Image Upload */}
+              <section className="flex flex-col h-full">
+                <h2 className="mb-4 text-center text-[var(--color-primary)]">
+                  Upload Image
+                </h2>
+                <div className="bg-[var(--color-soft-bg)] rounded-[var(--radius-lg)] p-5 shadow-[var(--shadow-sm)] h-full flex flex-col justify-between" style={{ height: "100%" }}>
+                  <div className="mb-4">
+                    <p className="text-[var(--color-foreground)]/70 mb-4"
+                      style={{ lineHeight: "var(--leading-relaxed)" }}>
+                      Upload an image to extract its design aesthetic. 
+                      Supported formats: JPEG, PNG, WEBP, or GIF.
+                    </p>
+                  </div>
+                  
+                  <div className="flex-1 flex items-center justify-center">
+                    <ImageUpload
+                      onImageSelect={handleImageSelect}
+                      selectedImage={state.image}
+                    />
+                  </div>
+                </div>
+              </section>
 
-            {state.image && (
-              <section className="section section-secondary flex flex-col items-center">
-                <h2 className="mb-6 text-center text-[var(--color-primary)]">
+              {/* Right Side: Analysis Controls */}
+              <section className={`flex flex-col h-full ${!state.image ? 'opacity-70' : 'opacity-100'} transition-opacity duration-300`}>
+                <h2 className="mb-4 text-center text-[var(--color-primary)]">
                   Extract Aesthetic
                 </h2>
-                <p
-                  className="text-center text-[var(--color-foreground)]/70 mb-8 max-w-lg"
-                  style={{ lineHeight: "var(--leading-relaxed)" }}
-                >
-                  Our AI will analyze your image and create a detailed style
-                  guide with colors, typography, spacing, and design patterns.
-                </p>
-
-                <AnalysisButton
-                  onClick={handleAnalyze}
-                  disabled={!state.image}
-                  isLoading={isLoading}
-                />
-                {error && (
-                  <p className="mt-4 text-center text-[var(--color-error)]">
-                    {error}
-                  </p>
-                )}
+                <div className="bg-[var(--color-soft-bg)] rounded-[var(--radius-lg)] p-5 shadow-[var(--shadow-sm)] h-full flex flex-col justify-between" style={{ height: "100%" }}>
+                  <div>
+                    <p className="text-[var(--color-foreground)]/70 mb-4"
+                      style={{ lineHeight: "var(--leading-relaxed)" }}>
+                      Our AI will analyze your image and create a detailed style
+                      guide with colors, typography, spacing, and design patterns.
+                    </p>
+                    <ul className="space-y-2 mb-6">
+                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
+                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Extract color palette
+                      </li>
+                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
+                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Identify typography styles
+                      </li>
+                      <li className="flex items-center text-sm text-[var(--color-foreground)]/80">
+                        <svg className="w-4 h-4 mr-2 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Analyze spacing & layout
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="mt-auto">
+                    <AnalysisButton
+                      onClick={handleAnalyze}
+                      disabled={!state.image}
+                      isLoading={isLoading}
+                    />
+                    {error && (
+                      <p className="mt-4 text-center text-[var(--color-error)]">
+                        {error}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </section>
-            )}
+            </div>
           </div>
         ) : (
           <div>
@@ -165,7 +199,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-16 mb-8 pt-4 text-center border-t border-[var(--color-divider)]">
+      <footer className="mt-auto pt-4 text-center border-t border-[var(--color-divider)]">
         <div className="inline-flex items-center gap-4 flex-wrap justify-center">
           <p className="text-sm text-[var(--color-foreground)]/50 mb-0 pb-0">
             © 2025 <span className="font-medium">vibecheck</span> • AI-powered

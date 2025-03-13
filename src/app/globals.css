@@ -1134,6 +1134,20 @@ a:hover {
   animation: bounce-once 0.8s ease-in-out;
 }
 
+/* Gentle bounce animation for subtle hints */
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 1.5s ease-in-out infinite;
+}
+
 /* Style Guide Section Animations */
 .style-guide-section {
   transition: all 0.5s ease-in-out;

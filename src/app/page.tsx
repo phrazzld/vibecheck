@@ -94,10 +94,10 @@ export default function Home() {
         
         <div className="mt-8 max-w-lg text-center">
           <p className="text-lg text-semibold" style={{ fontWeight: 500 }}>
-            Transform your images into detailed UI style guides with AI.
+            Transform images into detailed design aesthetic profiles.
           </p>
           <p className="mt-2 text-[var(--color-foreground)]/70 text-base">
-            Upload an image and get a comprehensive style guide for your design system.
+            Upload an image and get a complete breakdown of its colors, typography, and design elements.
           </p>
         </div>
       </header>
@@ -107,7 +107,7 @@ export default function Home() {
           <div className="space-y-12">
             <section className="section section-primary">
               <h2 className="mb-8 text-center text-[var(--color-primary)]">
-                Upload an Image
+                Upload Image
               </h2>
               <ImageUpload 
                 onImageSelect={handleImageSelect} 
@@ -118,10 +118,10 @@ export default function Home() {
             {state.image && (
               <section className="section section-secondary flex flex-col items-center">
                 <h2 className="mb-6 text-center text-[var(--color-primary)]">
-                  Generate Style Guide
+                  Extract Aesthetic
                 </h2>
                 <p className="text-center text-[var(--color-foreground)]/70 mb-8 max-w-lg" style={{ lineHeight: 'var(--leading-relaxed)' }}>
-                  Our AI will analyze your image and generate a comprehensive style guide including colors, typography, spacing, and design patterns.
+                  Our AI will analyze your image and create a detailed style guide with colors, typography, spacing, and design patterns.
                 </p>
                 
                 <AnalysisButton 
@@ -156,7 +156,7 @@ export default function Home() {
       </main>
 
       <footer className="mt-16 mb-8 pt-8 text-center border-t border-[var(--color-divider)]">
-        <p className="text-sm text-[var(--color-foreground)]/50" style={{ marginBottom: 0 }}>© 2025 vibecheck • AI-powered design style guide generation</p>
+        <p className="text-sm text-[var(--color-foreground)]/50" style={{ marginBottom: 0 }}>© 2025 vibecheck • AI-powered aesthetic extraction and design analysis</p>
       </footer>
 
       <LoadingIndicator isLoading={isLoading} />

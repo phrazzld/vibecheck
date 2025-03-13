@@ -1123,8 +1123,8 @@ a:hover {
 
 /* Style Guide Section Animations */
 .style-guide-section {
-  max-height: 2000px;
-  transition: max-height 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  overflow: visible;
 }
 
 .style-guide-section.collapsed {
@@ -1132,6 +1132,7 @@ a:hover {
   opacity: 0;
   padding-top: 0;
   padding-bottom: 0;
+  overflow: hidden;
 }
 
 /* Style Guide Section Content Styling */

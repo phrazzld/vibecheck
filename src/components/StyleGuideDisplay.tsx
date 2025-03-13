@@ -167,8 +167,8 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
           isOpen: true // All open by default
         };
         
-        // Identify color palette section
-        if (title.includes('Color')) {
+        // Identify color palette section - be flexible with naming
+        if (title.includes('Color') || title.toLowerCase().includes('palette') || title.includes('1.')) {
           colorPaletteSection = currentSection;
           colors[id] = [];
         }
@@ -203,6 +203,8 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     
     // Reorganize sections to prioritize color palette
     const reorderedSections = [...parsedSections];
+    
+    // If we have a color palette section, prioritize it
     if (colorPaletteSection) {
       // Remove color palette from its current position
       const colorIndex = reorderedSections.findIndex(s => s.id === colorPaletteSection?.id);
@@ -212,6 +214,10 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
         reorderedSections.unshift(colorSection);
       }
     }
+    
+    // Debug - log sections for troubleshooting
+    console.log("Found sections:", reorderedSections.map(s => s.title));
+    console.log("Found color swatches:", Object.keys(colors).map(k => `${k}: ${colors[k].length} colors`));
     
     setSections(reorderedSections);
     setColorSwatches(colors);
@@ -340,7 +346,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-accent)' }}>
-          Generated Style Guide
+          Aesthetic Profile
         </h2>
         <div className="flex gap-3">
           <Button
@@ -432,7 +438,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
             </button>
             
             {section.isOpen && (
-              <div className={`style-guide-section ${section.isOpen ? '' : 'collapsed'}`}>
+              <div className="style-guide-section">
                 {/* Special handling for color sections */}
                 {colorSwatches[section.id] && colorSwatches[section.id].length > 0 ? (
                   <div className="pt-6 pb-2 px-6">

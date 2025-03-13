@@ -186,10 +186,10 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
           
           {/* Text content */}
           <h3 className="text-xl font-medium text-center mb-3 text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
-            Generating Style Guide
+            Analyzing Design
           </h3>
           <p className="text-sm text-center text-[var(--color-foreground)]">
-            Our AI is analyzing your image and creating a detailed style guide...
+            Analyzing your image and extracting its design elements...
           </p>
           
           {/* Processing steps with staggered fade-in and dynamic icons */}
@@ -234,7 +234,7 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}
-              <span className="text-[var(--color-foreground)]/70">Analyzing typography patterns</span>
+              <span className="text-[var(--color-foreground)]/70">Analyzing typography</span>
             </div>
             
             <div 
@@ -256,7 +256,7 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}
-              <span className="text-[var(--color-foreground)]/70">Detecting spacing & layout rules</span>
+              <span className="text-[var(--color-foreground)]/70">Detecting spacing & layout</span>
             </div>
             
             <div 
@@ -279,7 +279,7 @@ export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
                 </svg>
               )}
               <span className={`${percentage >= 95 ? 'font-medium text-[var(--color-foreground)]' : 'text-[var(--color-foreground)]/70'}`}>
-                Generating comprehensive style guide
+                Generating aesthetic profile
               </span>
               {percentage >= 95 && (
                 <span className="ml-1 text-[var(--color-success)] font-medium">

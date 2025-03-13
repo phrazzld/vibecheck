@@ -29,7 +29,7 @@ export default function DownloadButton({
       leftIcon={<DownloadIcon />}
       showSuccess={showSuccess}
     >
-      Download Style Guide
+      Download Aesthetic
     </Button>
   );
 }

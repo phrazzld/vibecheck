@@ -64,7 +64,7 @@ export default function AnalysisButton({
         showSuccess={showSuccess}
         isFullWidth
       >
-        Analyze Image
+        Extract Aesthetic
       </Button>
     </div>
   );

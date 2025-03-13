@@ -268,7 +268,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
           <p className="mb-3 text-base font-semibold text-[var(--color-foreground)]">
             {fileHovering 
               ? (hoveringFileType && hoveringFileType.startsWith('image/') 
-                  ? "Drop to upload image..." 
+                  ? "Release to upload image..." 
                   : "Drop your file here...") 
               : "Drag and drop an image here, or click to select"}
           </p>

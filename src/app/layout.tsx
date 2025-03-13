@@ -3,8 +3,8 @@ import "./globals.css";
 import "./fonts.css";
 
 export const metadata: Metadata = {
-  title: "vibecheck - AI Style Guide Generator",
-  description: "Transform images into detailed UI style guides with AI",
+  title: "vibecheck - Design Aesthetic Extractor",
+  description: "Transform images into detailed design aesthetic profiles",
   applicationName: "vibecheck",
   authors: [{ name: "vibecheck", url: "https://vibecheck.design" }],
 };

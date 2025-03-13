@@ -81,13 +81,6 @@ export default function Home() {
     }
   }, [state.image, analyzeImage]);
 
-  // Helper for the manual button click
-  const handleAnalyze = useCallback(() => {
-    if (state.image) {
-      analyzeImage(state.image as File);
-    }
-  }, [state.image, analyzeImage]);
-
   return (
     <div className="min-h-screen flex flex-col p-6 md:p-8 pb-16">
       <header className="flex flex-col items-center mb-8 md:mb-10">

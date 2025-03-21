@@ -14,7 +14,7 @@
     "logs:tail": "node scripts/view-logs.js --tail"
   },
   "dependencies": {
-    "next": "15.2.2",
+    "next": "15.2.3",
     "openai": "^4.87.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -158,6 +158,8 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
   useEffect(() => {
     if (!markdown) return;
     
+    console.log("Processing markdown:", markdown.substring(0, 100) + "...");
+    
     // Parse markdown into sections
     const lines = markdown.split('\n');
     const parsedSections: StyleGuideSection[] = [];
@@ -165,7 +167,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     const colors: Record<string, ColorSwatch[]> = {};
     let colorPaletteSection: StyleGuideSection | null = null;
     
-    lines.forEach(line => {
+    lines.forEach((line, index) => {
       // Create new section
       if (line.startsWith('## ')) {
         // Save previous section if exists
@@ -182,26 +184,36 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
           isOpen: true // All open by default
         };
         
-        // Identify color palette section - be flexible with naming
-        if (title.includes('Color') || title.toLowerCase().includes('palette') || title.includes('1.')) {
+        // Identify color palette section - be more flexible with naming
+        if (
+          title.toLowerCase().includes('color') || 
+          title.toLowerCase().includes('palette') || 
+          title.includes('1.')
+        ) {
+          console.log(`Found potential color section: "${title}"`);
           colorPaletteSection = currentSection;
           colors[id] = [];
         }
       } 
-      // Extract color hex codes
-      else if (currentSection && line.match(/#[0-9A-Fa-f]{6}/)) {
-        const section = currentSection.id;
-        if (colors[section]) {
-          const colorMatch = line.match(/#[0-9A-Fa-f]{6}/);
-          if (colorMatch) {
-            const color = colorMatch[0];
-            const nameParts = line.split(':');
-            const name = nameParts.length > 1 
-              ? nameParts[0].trim().replace(/[*_]/g, '')  // Remove markdown formatting
-              : `Color ${colors[section].length + 1}`;
-              
-            colors[section].push({ color, name });
+      // Extract color hex codes - more aggressively
+      else if (currentSection) {
+        const hexMatch = line.match(/#[0-9A-Fa-f]{6}/);
+        if (hexMatch) {
+          const section = currentSection.id;
+          // Initialize the color array for this section if it doesn't exist
+          if (!colors[section]) {
+            console.log(`Creating color array for section: ${section}`);
+            colors[section] = [];
           }
+          
+          const color = hexMatch[0];
+          const nameParts = line.split(':');
+          const name = nameParts.length > 1 
+            ? nameParts[0].trim().replace(/[*_]/g, '')  // Remove markdown formatting
+            : `Color ${colors[section].length + 1}`;
+          
+          console.log(`Found color in line ${index}: ${color} (${name})`);    
+          colors[section].push({ color, name });
         }
       }
       
@@ -233,6 +245,11 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
     // Debug - log sections for troubleshooting
     console.log("Found sections:", reorderedSections.map(s => s.title));
     console.log("Found color swatches:", Object.keys(colors).map(k => `${k}: ${colors[k].length} colors`));
+    
+    // For debugging, log the actual color swatches
+    for (const section in colors) {
+      console.log(`Colors in ${section}:`, colors[section]);
+    }
     
     setSections(reorderedSections);
     setColorSwatches(colors);
@@ -318,11 +335,10 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
       return <code className={className} {...props}>{children}</code>;
     }
     
+    // Fixed nesting issue by moving button inside pre
     return (
-      <div className="relative group">
-        <pre>
-          <code className={className}>{children}</code>
-        </pre>
+      <pre className="relative group">
+        <code className={className}>{children}</code>
         <button 
           onClick={handleCopyCode}
           className="absolute top-2 right-2 bg-[var(--color-card-bg)]/90 hover:bg-[var(--color-card-bg)] rounded-md p-1 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-primary)]"
@@ -334,7 +350,7 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
             <CopyIcon className="w-4 h-4" />
           )}
         </button>
-      </div>
+      </pre>
     );
   };
   
@@ -352,7 +368,11 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
       <ReactMarkdown
         components={{
           // Custom rendering for code blocks to support copy button
-          code: CodeBlock
+          code: CodeBlock,
+          // Fix HTML nesting issues by overriding p, pre, and li elements
+          p: ({ children }) => <div className="my-4">{children}</div>,
+          pre: ({ children }) => <>{children}</>,
+          li: ({ children }) => <li className="my-1">{children}</li>
         }}
       >
         {contentWithoutHeader}
@@ -485,6 +505,20 @@ export default function StyleGuideDisplay({ markdown }: StyleGuideDisplayProps) 
                     <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
                       {renderMarkdown(section.content)}
                     </div>
+                  </div>
+                )}
+                
+                {/* Debug info - remove in production */}
+                {process.env.NODE_ENV !== 'production' && (
+                  <div className="px-6 py-2 text-xs text-gray-500 border-t border-gray-200">
+                    <details>
+                      <summary>Debug Info</summary>
+                      <div>Section ID: {section.id}</div>
+                      <div>Has color swatches: {colorSwatches[section.id] ? 'Yes' : 'No'}</div>
+                      {colorSwatches[section.id] && (
+                        <div>Color count: {colorSwatches[section.id].length}</div>
+                      )}
+                    </details>
                   </div>
                 )}
               </div>

@@ -15,54 +15,9 @@ export const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-/**
- * Validates if a file is an acceptable image format
- */
-export const isValidImageFile = (file: File): boolean => {
-  const acceptableTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  
-  // Also check file size (max 10MB)
-  const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-  if (file.size > maxSize) {
-    return false;
-  }
-  
-  return acceptableTypes.includes(file.type);
-};
+/* Function isValidImageFile was removed - no longer used in the app */
 
-/**
- * Returns appropriate icon for file type
- */
-export const getFileTypeIcon = (file: File): string => {
-  const type = file.type.split('/')[0];
-  
-  // Image-specific icons
-  if (type === 'image') {
-    if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-      return `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-      </svg>`;
-    } else if (file.type === 'image/png') {
-      return `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-      </svg>`;
-    } else if (file.type === 'image/gif') {
-      return `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-      </svg>`;
-    }
-    
-    // Default image icon
-    return `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-    </svg>`;
-  }
-  
-  // Fallback/default icon
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
-  </svg>`;
-};
+/* Function getFileTypeIcon was removed - no longer used in the app */
 
 /**
  * Formats file size in human readable format

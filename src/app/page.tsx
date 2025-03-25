@@ -9,13 +9,13 @@ import { AppState, ApiKeyData } from "@/types";
 import { fileToBase64 } from "@/utils/image";
 
 // Local storage key
-const API_KEY_STORAGE_KEY = 'vibecheck_api_key_data';
+const API_KEY_STORAGE_KEY = "vibecheck_api_key_data";
 
 export default function Home() {
   // Initialize state with stored API key if available
   const [state, setState] = useState<AppState>(() => {
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         const savedData = localStorage.getItem(API_KEY_STORAGE_KEY);
         if (savedData) {
@@ -26,35 +26,35 @@ export default function Home() {
               image: null,
               result: null,
               apiKey: parsedData.key,
-              rememberKey: parsedData.remember
+              rememberKey: parsedData.remember,
             };
           }
         }
       } catch (e) {
         // Silent fail - if there's an error reading localStorage, just use default state
-        console.error('Error reading from localStorage', e);
+        console.error("Error reading from localStorage", e);
       }
     }
-    
+
     // Default state
     return {
       image: null,
       result: null,
-      apiKey: '',
-      rememberKey: false
+      apiKey: "",
+      rememberKey: false,
     };
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleApiKeySave = useCallback((data: ApiKeyData) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       apiKey: data.key,
-      rememberKey: data.remember
+      rememberKey: data.remember,
     }));
-    
+
     // Save to localStorage if remember is true
     if (data.remember) {
       localStorage.setItem(API_KEY_STORAGE_KEY, JSON.stringify(data));
@@ -75,55 +75,58 @@ export default function Home() {
   }, []);
 
   // Define the analyze function separately to avoid circular dependencies
-  const analyzeImage = useCallback(async (imageFile: File) => {
-    // Check for API key before proceeding
-    if (!state.apiKey.trim()) {
-      setError("OpenAI API key is required to analyze images");
-      setIsLoading(false);
-      return;
-    }
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Convert image to base64
-      const base64Image = await fileToBase64(imageFile);
-
-      // Call API with user's API key
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image: base64Image,
-          apiKey: state.apiKey
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to analyze image");
+  const analyzeImage = useCallback(
+    async (imageFile: File) => {
+      // Check for API key before proceeding
+      if (!state.apiKey.trim()) {
+        setError("OpenAI API key is required to analyze images");
+        setIsLoading(false);
+        return;
       }
 
-      const data = await response.json();
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      setState((prev) => ({
-        ...prev,
-        result: data.styleGuide,
-      }));
-    } catch (error: unknown) {
-      console.error("Error analyzing image:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "An error occurred while analyzing the image";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [state.apiKey, setIsLoading, setError, setState]);
+        // Convert image to base64
+        const base64Image = await fileToBase64(imageFile);
+
+        // Call API with user's API key
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: base64Image,
+            apiKey: state.apiKey,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to analyze image");
+        }
+
+        const data = await response.json();
+
+        setState((prev) => ({
+          ...prev,
+          result: data.styleGuide,
+        }));
+      } catch (error: unknown) {
+        console.error("Error analyzing image:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "An error occurred while analyzing the image";
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [state.apiKey, setIsLoading, setError, setState],
+  );
 
   // Auto-trigger analysis when a valid image is uploaded
   useEffect(() => {
@@ -133,7 +136,7 @@ export default function Home() {
         // Type assertion since we've already checked that state.image is not null
         analyzeImage(state.image as File);
       }, 800); // Slight delay to allow the image preview to render
-      
+
       return () => clearTimeout(timer);
     }
   }, [state.image, state.apiKey, analyzeImage]);
@@ -175,7 +178,7 @@ export default function Home() {
             <section className="flex flex-col">
               {/* If no API key set yet, show API key form prominently */}
               {!state.apiKey ? (
-                <ApiKeyManager 
+                <ApiKeyManager
                   onApiKeySave={handleApiKeySave}
                   apiKey={state.apiKey}
                   rememberKey={state.rememberKey}
@@ -186,11 +189,12 @@ export default function Home() {
                   <ImageUpload
                     onImageSelect={handleImageSelect}
                     selectedImage={state.image}
+                    isLoading={isLoading}
                   />
-                  
+
                   {/* Show compact API key manager below the upload */}
                   <div className="mt-4">
-                    <ApiKeyManager 
+                    <ApiKeyManager
                       onApiKeySave={handleApiKeySave}
                       apiKey={state.apiKey}
                       rememberKey={state.rememberKey}
@@ -198,14 +202,23 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              
+
               {/* Show friendly message if no API key is provided */}
               {!state.apiKey && (
                 <div className="mt-4 w-full max-w-md mx-auto text-center">
                   <div className="bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 rounded-xl p-4 shadow-lg">
                     <div className="flex items-center justify-center gap-2 text-[var(--color-warning)] mb-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <span className="font-medium">API Key Required</span>
                     </div>
@@ -215,13 +228,29 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              
+
               {isLoading && (
                 <div className="mt-8 text-center">
                   <div className="inline-block p-4 rounded-full bg-gradient-to-br from-[var(--color-primary)]/15 via-[var(--color-accent-2)]/10 to-[var(--color-lavender)]/15 shadow-lg shadow-[var(--color-primary)]/5 backdrop-blur-sm">
-                    <svg className="animate-spin h-10 w-10 text-[var(--color-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin h-10 w-10 text-[var(--color-primary)]"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-20"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                   </div>
                   <p className="mt-4 text-xl text-[var(--color-foreground)]/90 font-medium">
@@ -232,19 +261,28 @@ export default function Home() {
                   </p>
                 </div>
               )}
-              
+
               {error && (
                 <div className="mt-8 text-center">
                   <div className="p-4 inline-block text-center text-[var(--color-error)] bg-gradient-to-r from-[var(--color-error)]/20 to-[var(--color-error)]/5 rounded-xl border border-[var(--color-error)]/30 backdrop-blur-sm shadow-md">
                     <div className="flex items-center justify-center gap-3 mb-2">
                       <div className="p-2 rounded-full bg-[var(--color-error)]/15">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </div>
                       <span className="font-medium text-lg">{error}</span>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setError(null)}
                       className="mt-2 text-sm px-4 py-1.5 rounded-full bg-[var(--color-error)]/10 hover:bg-[var(--color-error)]/20 text-[var(--color-error)]/90 hover:text-[var(--color-error)] transition-all duration-300 shadow-sm hover:shadow"
                     >
@@ -260,16 +298,18 @@ export default function Home() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
               <Button
                 variant="tertiary"
-                onClick={() => setState((prev) => ({ ...prev, result: null, image: null }))}
+                onClick={() =>
+                  setState((prev) => ({ ...prev, result: null, image: null }))
+                }
                 leftIcon={<ArrowLeftIcon />}
                 className="border border-[var(--color-border)] shadow-sm"
               >
                 Analyze New Image
               </Button>
-              
+
               {/* Show compact API key manager on result page too */}
               {state.apiKey && (
-                <ApiKeyManager 
+                <ApiKeyManager
                   onApiKeySave={handleApiKeySave}
                   apiKey={state.apiKey}
                   rememberKey={state.rememberKey}
@@ -287,8 +327,7 @@ export default function Home() {
       <footer className="mt-auto pt-4 text-center border-t border-[var(--color-divider)]/20">
         <div className="inline-flex items-center gap-4 flex-wrap justify-center">
           <p className="text-sm text-[var(--color-foreground)]/50 mb-0 pb-0">
-            © 2025 <span className="font-medium">vibecheck</span> • AI-powered
-            aesthetic extraction
+            © 2025 <span className="font-medium">vibecheck</span>
           </p>
           <a
             href="https://github.com/phrazzld/vibecheck"

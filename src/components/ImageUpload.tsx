@@ -5,9 +5,14 @@ import { Button, EditIcon } from "./ui";
 interface ImageUploadProps {
   onImageSelect: (file: File) => void;
   selectedImage: File | null;
+  isLoading?: boolean; // Add isLoading prop
 }
 
-export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploadProps) {
+export default function ImageUpload({ 
+  onImageSelect, 
+  selectedImage, 
+  isLoading = false 
+}: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +47,9 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
     e.preventDefault();
     e.stopPropagation();
     
+    // Prevent drag interactions during loading
+    if (isLoading) return;
+    
     // Check if dragging a file
     if (e.dataTransfer.types.some(type => type === 'Files')) {
       setFileHovering(true);
@@ -68,6 +76,9 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   };
 
   const validateAndSelectFile = (file: File) => {
+    // Prevent file selection during loading
+    if (isLoading) return;
+    
     const acceptableTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
     
@@ -100,6 +111,9 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
     e.preventDefault();
     e.stopPropagation();
     
+    // Prevent drop interactions during loading
+    if (isLoading) return;
+    
     setIsDragging(false);
     setFileHovering(false);
     setHoveringFileType(null);
@@ -123,12 +137,18 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   };
 
   const handleClick = () => {
+    // Prevent clicking when loading
+    if (isLoading) return;
+    
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
   
   const handleChangeImage = () => {
+    // Prevent changing when loading
+    if (isLoading) return;
+    
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -138,7 +158,7 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
   if (selectedImage && preview) {
     return (
       <div className="w-full h-full">
-        <div className={`relative overflow-hidden h-full transition-all duration-500 ease-in-out ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'}`}>
+        <div className={`relative overflow-hidden h-full transition-all duration-500 ease-in-out ${previewVisible ? 'file-preview-enter-active' : 'file-preview-enter'} ${isLoading ? 'cursor-not-allowed' : 'cursor-default'}`}>
           <div className="h-full flex flex-col rounded-xl shadow-lg shadow-[var(--color-primary)]/10 overflow-hidden">
             <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-lavender)]/20 p-5 rounded-t-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -178,10 +198,15 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
                 variant="primary"
                 size="sm"
                 onClick={handleChangeImage}
+                disabled={isLoading}
                 leftIcon={<EditIcon className="h-3 w-3 group-hover:rotate-12 transition-transform duration-300" />}
-                className="text-xs py-1.5 px-3 font-medium shadow-md hover:shadow-lg transition-all duration-300"
+                className={`text-xs py-1.5 px-3 font-medium shadow-md transition-all duration-300 ${
+                  isLoading 
+                    ? "opacity-50 cursor-not-allowed" 
+                    : "hover:shadow-lg"
+                }`}
               >
-                Replace
+                {isLoading ? "Analyzing..." : "Replace"}
               </Button>
             </div>
           </div>
@@ -204,11 +229,13 @@ export default function ImageUpload({ onImageSelect, selectedImage }: ImageUploa
       <div
         className={`group dropzone h-full transform-gpu motion-safe:transition-all motion-safe:duration-700 motion-safe:ease-elastic ${
           isDragging ? "active" : ""
-        } ${isDropped ? "dropped" : ""} 
-        shadow-lg shadow-transparent hover:shadow-2xl hover:shadow-[var(--color-primary)]/10
+        } ${isDropped ? "dropped" : ""} ${
+          isLoading ? "opacity-50 cursor-not-allowed" : ""
+        }
+        shadow-lg shadow-transparent ${isLoading ? "" : "hover:shadow-2xl hover:shadow-[var(--color-primary)]/10"}
         bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-surface)] to-[var(--color-lavender)]/20
-        hover:from-[var(--color-lavender)]/5 hover:via-[var(--color-surface)] hover:to-[var(--color-primary)]/5
-        border-2 border-dashed border-[var(--color-border)]/40 hover:border-[var(--color-primary)]/30
+        ${isLoading ? "" : "hover:from-[var(--color-lavender)]/5 hover:via-[var(--color-surface)] hover:to-[var(--color-primary)]/5"}
+        border-2 border-dashed border-[var(--color-border)]/40 ${isLoading ? "" : "hover:border-[var(--color-primary)]/30"}
         rounded-xl backdrop-blur-sm`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

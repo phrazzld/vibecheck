@@ -3,6 +3,8 @@ import OpenAI from "openai";
 import { generatePrompt } from "@/utils/prompt";
 import { AnalyzeRequest, AnalyzeResponse } from "@/types";
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   try {
     // Parse request body
